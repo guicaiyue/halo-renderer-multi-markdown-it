@@ -1,77 +1,206 @@
-/* global hexo */
+/**
+ * Independent Markdown Renderer with Multiple Plugins
+ * Converted from hexo-renderer-multi-markdown-it
+ */
 
 'use strict';
 
-hexo.config.markdown = Object.assign({
-  render: {},
-  plugins: {}
-}, hexo.config.markdown);
+const MdIt = require('markdown-it');
 
-hexo.config.markdown.render = Object.assign({
-  html: true,
-  xhtmlOut: false,
-  breaks: true,
-  linkify: true,
-  typographer: true,
-  quotes: '“”‘’',
-  tab: ''
-}, hexo.config.markdown.render);
+// Default plugins list
+const default_plugins = [
+    'markdown-it-abbr',
+    'markdown-it-bracketed-spans',
+    'markdown-it-attrs',
+    'markdown-it-deflist',
+    'markdown-it-emoji',
+    'markdown-it-footnote',
+    'markdown-it-ins',
+    'markdown-it-mark',
+    'markdown-it-multimd-table',
+    'markdown-it-sub',
+    'markdown-it-sup',
+    'markdown-it-task-checkbox',
+    'markdown-it-toc-and-anchor',
+    'markdown-it-pangu',
+    './lib/renderer/markdown-it-container',
+    './lib/renderer/markdown-it-furigana',
+    './lib/renderer/markdown-it-katex',
+    './lib/renderer/markdown-it-mermaid',
+    './lib/renderer/markdown-it-graphviz',
+    './lib/renderer/markdown-it-prism',
+    './lib/renderer/markdown-it-chart',
+    './lib/renderer/markdown-it-spoiler',
+    './lib/renderer/markdown-it-excerpt'
+];
 
+// Default configuration
+const default_config = {
+    render: {
+        html: true,
+        xhtmlOut: false,
+        breaks: true,
+        linkify: true,
+        typographer: true,
+        quotes: '""\u2018\u2019',
+        tab: ''
+    },
+    plugins: []
+};
 
-const renderer = require('./lib/renderer');
+/**
+ * Process and merge plugin configurations
+ * @param {Array} plugins - User provided plugins configuration
+ * @return {Array} - Processed plugins list
+ */
+function processPlugins(plugins = []) {
+    const default_plugins_map = {};
+    
+    // Initialize default plugins
+    for (const plugin_name of default_plugins) {
+        default_plugins_map[plugin_name] = {
+            name: plugin_name,
+            enable: true,
+            options: {}
+        };
+    }
 
-hexo.extend.renderer.register('md', 'html', renderer, true);
-hexo.extend.renderer.register('markdown', 'html', renderer, true);
-hexo.extend.renderer.register('mkd', 'html', renderer, true);
-hexo.extend.renderer.register('mkdn', 'html', renderer, true);
-hexo.extend.renderer.register('mdwn', 'html', renderer, true);
-hexo.extend.renderer.register('mdtxt', 'html', renderer, true);
-hexo.extend.renderer.register('mdtext', 'html', renderer, true);
+    const custom_plugins = [];
 
+    // Process user provided plugins
+    for (const plugin_config of plugins) {
+        if (!plugin_config || typeof plugin_config !== 'object') {
+            continue;
+        }
+        
+        const plugin_name = plugin_config.name;
+        if (!plugin_name) {
+            continue;
+        }
 
-if (hexo.config.minify) {
-    // HTML minifier
-    hexo.config.minify.html = Object.assign({
-        enable: true,
-        logger: true,
-        stamp: true,
-        exclude: [],
-        ignoreCustomComments: [/^\s*more/],
-        removeComments: true,
-        removeCommentsFromCDATA: true,
-        collapseWhitespace: true,
-        collapseBooleanAttributes: true,
-        removeEmptyAttributes: true,
-        minifyJS: true,
-        minifyCSS: true,
-    }, hexo.config.minify.html);
+        const enable = plugin_config.enable !== false; // Default to true
+        const options = plugin_config.options || {};
 
-    // Css minifier
-    hexo.config.minify.css = Object.assign({
-        enable: true,
-        logger: true,
-        stamp: true,
-        exclude: ['*.min.css']
-    }, hexo.config.minify.css);
+        if (default_plugins_map[plugin_name]) {
+            // Update default plugin configuration
+            default_plugins_map[plugin_name] = {
+                name: plugin_name,
+                enable,
+                options
+            };
+        } else {
+            // Add custom plugin
+            custom_plugins.push({
+                name: plugin_name,
+                enable,
+                options
+            });
+        }
+    }
 
-    // Js minifier
-    hexo.config.minify.js = Object.assign({
-        enable: true,
-        mangle: true,
-        logger: true,
-        stamp: true,
-        output: {},
-        compress: {},
-        exclude: ['*.min.js']
-    }, hexo.config.minify.js, {
-            fromString: true
-    });
+    // Combine default plugins (in order) with custom plugins
+    const result = [];
+    for (const plugin_name of default_plugins) {
+        result.push(default_plugins_map[plugin_name]);
+    }
+    result.push(...custom_plugins);
 
-
-    var filter = require('./lib/filter');
-
-	hexo.extend.filter.register('after_render:html', filter.logic_html);
-    hexo.extend.filter.register('after_render:css', filter.logic_css);
-    hexo.extend.filter.register('after_render:js', filter.logic_js);
-
+    return result;
 }
+
+/**
+ * Load and apply plugins to markdown-it parser
+ * @param {Object} parser - markdown-it instance
+ * @param {Array} plugins - Plugins configuration
+ * @return {Object} - Configured parser
+ */
+function applyPlugins(parser, plugins) {
+    return plugins.reduce((parser, plugin_config) => {
+        if (!plugin_config.enable) {
+            return parser;
+        }
+
+        try {
+            let plugin = require(plugin_config.name);
+
+            // Handle ES6 modules
+            if (typeof plugin !== 'function' && typeof plugin.default === 'function') {
+                plugin = plugin.default;
+            }
+
+            if (typeof plugin !== 'function') {
+                console.warn(`Plugin ${plugin_config.name} is not a function`);
+                return parser;
+            }
+
+            // Apply plugin with or without options
+            if (plugin_config.options && Object.keys(plugin_config.options).length > 0) {
+                return parser.use(plugin, plugin_config.options);
+            } else {
+                return parser.use(plugin);
+            }
+        } catch (error) {
+            console.warn(`Failed to load plugin ${plugin_config.name}:`, error.message);
+            return parser;
+        }
+    }, parser);
+}
+
+/**
+ * Main render function
+ * @param {string} markdown - Markdown text to render
+ * @param {Object} options - Configuration options
+ * @return {string} - Rendered HTML
+ */
+function render(markdown, options = {}) {
+    if (typeof markdown !== 'string') {
+        throw new Error('Markdown input must be a string');
+    }
+
+    // Merge configuration
+    const config = {
+        render: { ...default_config.render, ...(options.render || {}) },
+        plugins: options.plugins || default_config.plugins
+    };
+
+    // Create markdown-it instance
+    const parser_config = config.render;
+    const parser = new MdIt(parser_config);
+
+    // Process and apply plugins
+    const processed_plugins = processPlugins(config.plugins);
+    const configured_parser = applyPlugins(parser, processed_plugins);
+
+    // Render markdown to HTML
+    try {
+        return configured_parser.render(markdown);
+    } catch (error) {
+        throw new Error(`Markdown rendering failed: ${error.message}`);
+    }
+}
+
+/**
+ * Create a configured renderer instance
+ * @param {Object} options - Default configuration for this instance
+ * @return {Function} - Render function with preset configuration
+ */
+function createRenderer(options = {}) {
+    return function(markdown, instanceOptions = {}) {
+        const merged_options = {
+            render: { ...options.render, ...instanceOptions.render },
+            plugins: instanceOptions.plugins || options.plugins || []
+        };
+        return render(markdown, merged_options);
+    };
+}
+
+// Export main functions
+module.exports = {
+    render,
+    createRenderer,
+    default_plugins,
+    default_config
+};
+
+// For CommonJS compatibility
+module.exports.default = module.exports;

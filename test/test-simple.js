@@ -2,7 +2,7 @@
  * Simple test for markdown-renderer-multi
  */
 
-const MarkdownRenderer = require('../index');
+const MarkdownRenderer = require('../dist/index');
 
 // Simple markdown test
 const simpleMarkdown = `

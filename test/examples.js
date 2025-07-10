@@ -2,7 +2,7 @@
  * Example usage of markdown-renderer-multi
  */
 
-const MarkdownRenderer = require('../index');
+const MarkdownRenderer = require('../dist/index');
 
 // Example markdown content
 const markdownText = `

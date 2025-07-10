@@ -5,7 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const MarkdownRenderer = require('../index');
+const MarkdownRenderer = require('../dist/index');
 
 // 读取测试文档
 const testMarkdownPath = path.join(__dirname, 'test-all-features.md');

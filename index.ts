@@ -5,10 +5,11 @@
 
 'use strict';
 
-const MdIt = require('markdown-it');
+import MdIt = require('markdown-it');
+import { RenderOptions, PluginConfig, RendererConfig, ProcessedPlugin, MarkdownItPlugin } from './types';
 
 // Default plugins list
-const default_plugins = [
+const default_plugins: string[] = [
     'markdown-it-abbr',
     'markdown-it-bracketed-spans',
     'markdown-it-attrs',
@@ -35,7 +36,10 @@ const default_plugins = [
 ];
 
 // Default configuration
-const default_config = {
+const default_config: {
+    render: RenderOptions;
+    plugins: PluginConfig[];
+} = {
     render: {
         html: true,
         xhtmlOut: false,
@@ -50,11 +54,11 @@ const default_config = {
 
 /**
  * Process and merge plugin configurations
- * @param {Array} plugins - User provided plugins configuration
- * @return {Array} - Processed plugins list
+ * @param plugins - User provided plugins configuration
+ * @returns Processed plugins list
  */
-function processPlugins(plugins = []) {
-    const default_plugins_map = {};
+function processPlugins(plugins: PluginConfig[] = []): ProcessedPlugin[] {
+    const default_plugins_map: Record<string, ProcessedPlugin> = {};
     
     // Initialize default plugins
     for (const plugin_name of default_plugins) {
@@ -65,7 +69,7 @@ function processPlugins(plugins = []) {
         };
     }
 
-    const custom_plugins = [];
+    const custom_plugins: ProcessedPlugin[] = [];
 
     // Process user provided plugins
     for (const plugin_config of plugins) {
@@ -99,7 +103,7 @@ function processPlugins(plugins = []) {
     }
 
     // Combine default plugins (in order) with custom plugins
-    const result = [];
+    const result: ProcessedPlugin[] = [];
     for (const plugin_name of default_plugins) {
         result.push(default_plugins_map[plugin_name]);
     }
@@ -110,22 +114,22 @@ function processPlugins(plugins = []) {
 
 /**
  * Load and apply plugins to markdown-it parser
- * @param {Object} parser - markdown-it instance
- * @param {Array} plugins - Plugins configuration
- * @return {Object} - Configured parser
+ * @param parser - markdown-it instance
+ * @param plugins - Plugins configuration
+ * @returns Configured parser
  */
-function applyPlugins(parser, plugins) {
-    return plugins.reduce((parser, plugin_config) => {
+function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): MdIt {
+    return plugins.reduce((parser: MdIt, plugin_config: ProcessedPlugin) => {
         if (!plugin_config.enable) {
             return parser;
         }
 
         try {
-            let plugin = require(plugin_config.name);
+            let plugin: MarkdownItPlugin | { default: MarkdownItPlugin } = require(plugin_config.name);
 
             // Handle ES6 modules
-            if (typeof plugin !== 'function' && typeof plugin.default === 'function') {
-                plugin = plugin.default;
+            if (typeof plugin !== 'function' && typeof (plugin as any).default === 'function') {
+                plugin = (plugin as any).default;
             }
 
             if (typeof plugin !== 'function') {
@@ -135,11 +139,11 @@ function applyPlugins(parser, plugins) {
 
             // Apply plugin with or without options
             if (plugin_config.options && Object.keys(plugin_config.options).length > 0) {
-                return parser.use(plugin, plugin_config.options);
+                return parser.use(plugin as MarkdownItPlugin, plugin_config.options);
             } else {
-                return parser.use(plugin);
+                return parser.use(plugin as MarkdownItPlugin);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.warn(`Failed to load plugin ${plugin_config.name}:`, error.message);
             return parser;
         }
@@ -148,24 +152,24 @@ function applyPlugins(parser, plugins) {
 
 /**
  * Main render function
- * @param {string} markdown - Markdown text to render
- * @param {Object} options - Configuration options
- * @return {string} - Rendered HTML
+ * @param markdown - Markdown text to render
+ * @param options - Configuration options
+ * @returns Rendered HTML
  */
-function render(markdown, options = {}) {
+function render(markdown: string, options: RendererConfig = {}): string {
     if (typeof markdown !== 'string') {
         throw new Error('Markdown input must be a string');
     }
 
     // Merge configuration
-    const config = {
+    const config: RendererConfig = {
         render: { ...default_config.render, ...(options.render || {}) },
         plugins: options.plugins || default_config.plugins
     };
 
     // Create markdown-it instance
-    const parser_config = config.render;
-    const parser = new MdIt(parser_config);
+    const parser_config = config.render!;
+    const parser = new (MdIt as any)(parser_config);
 
     // Process and apply plugins
     const processed_plugins = processPlugins(config.plugins);
@@ -174,19 +178,19 @@ function render(markdown, options = {}) {
     // Render markdown to HTML
     try {
         return configured_parser.render(markdown);
-    } catch (error) {
+    } catch (error: any) {
         throw new Error(`Markdown rendering failed: ${error.message}`);
     }
 }
 
 /**
  * Create a configured renderer instance
- * @param {Object} options - Default configuration for this instance
- * @return {Function} - Render function with preset configuration
+ * @param options - Default configuration for this instance
+ * @returns Render function with preset configuration
  */
-function createRenderer(options = {}) {
-    return function(markdown, instanceOptions = {}) {
-        const merged_options = {
+function createRenderer(options: RendererConfig = {}): (markdown: string, instanceOptions?: RendererConfig) => string {
+    return function(markdown: string, instanceOptions: RendererConfig = {}): string {
+        const merged_options: RendererConfig = {
             render: { ...options.render, ...instanceOptions.render },
             plugins: instanceOptions.plugins || options.plugins || []
         };
@@ -195,12 +199,23 @@ function createRenderer(options = {}) {
 }
 
 // Export main functions
-module.exports = {
+export {
     render,
     createRenderer,
     default_plugins,
     default_config
 };
 
+// Default export for CommonJS compatibility
+const markdownRenderer = {
+    render,
+    createRenderer,
+    default_plugins,
+    default_config
+};
+
+export default markdownRenderer;
+
 // For CommonJS compatibility
-module.exports.default = module.exports;
+module.exports = markdownRenderer;
+module.exports.default = markdownRenderer;

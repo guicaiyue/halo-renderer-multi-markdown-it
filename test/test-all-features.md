@@ -223,7 +223,7 @@ Orange
 
 ### 属性扩展
 
-这是一个带有属性的段落{.custom-class #my-id data-value="test"}。
+这是一个带有属性的段落{.custom-class #my-id data-value="test"}
 
 [链接](https://example.com){.external target="_blank"}
 

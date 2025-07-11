@@ -1,6 +1,6 @@
 {
   "name": "markdown-renderer-xirizhi",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A powerful independent Markdown renderer with 23+ plugins support, converted from hexo-renderer-multi-markdown-it.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -57,7 +57,10 @@
     "dev": "tsc --watch",
     "test": "npm run build && node test/test-simple.js",
     "test-all": "npm run build && node test/test-all-features.js",
-    "prepublishOnly": "npm run build"
+    "test-modules": "npm run build && node test/test-module-loading.js",
+    "test-ci": "node test/test-ci.js",
+    "pretest": "npm run test-modules",
+    "prepublishOnly": "npm run test-ci"
   },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",

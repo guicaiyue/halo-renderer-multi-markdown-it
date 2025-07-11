@@ -125,8 +125,21 @@ function legacyRenderer(this: LegacyContext, data: RenderData, options?: any): s
             try {
                 let plugin: MarkdownItPlugin | { default: MarkdownItPlugin } = require(pluginConfig.name);
 
+                // 处理 ES6 模块导出
                 if (typeof plugin !== 'function' && typeof (plugin as any).default === 'function') {
                     plugin = (plugin as any).default;
+                }
+
+                // 处理特殊插件：markdown-it-emoji
+                if (pluginConfig.name === 'markdown-it-emoji' && typeof plugin === 'object') {
+                    // markdown-it-emoji 导出 { bare, full, light }，使用 full 版本
+                    plugin = (plugin as any).full || (plugin as any).bare;
+                }
+
+                // 跳过有问题的插件
+                if (pluginConfig.name === 'markdown-it-toc-and-anchor') {
+                    console.warn(`Skipping ${pluginConfig.name} due to dependency issues`);
+                    return parser;
                 }
 
                 if (typeof plugin !== 'function') {

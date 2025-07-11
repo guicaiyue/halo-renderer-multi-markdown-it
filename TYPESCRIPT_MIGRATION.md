@@ -46,7 +46,7 @@ npm run test-all
 
 ### JavaScript项目中使用
 ```javascript
-const { render } = require('markdown-renderer-multi');
+const { render } = require('markdown-renderer-xirizhi');
 
 const html = render('# Hello World');
 console.log(html);
@@ -54,7 +54,7 @@ console.log(html);
 
 ### TypeScript项目中使用
 ```typescript
-import { render, RendererConfig } from 'markdown-renderer-multi';
+import { render, RendererConfig } from 'markdown-renderer-xirizhi';
 
 const options: RendererConfig = {
   render: {

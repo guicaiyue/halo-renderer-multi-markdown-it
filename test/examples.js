@@ -1,5 +1,5 @@
 /**
- * Example usage of markdown-renderer-multi
+ * Example usage of markdown-renderer-xirizhi
  */
 
 const MarkdownRenderer = require('../dist/index');

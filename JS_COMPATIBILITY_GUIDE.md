@@ -35,10 +35,10 @@ dist/
 
 ```javascript
 // CommonJS 方式
-const { render, createRenderer } = require('markdown-renderer-multi');
+const { render, createRenderer } = require('markdown-renderer-xirizhi');
 
 // ES6 模块方式（如果支持）
-import { render, createRenderer } from 'markdown-renderer-multi';
+import { render, createRenderer } from 'markdown-renderer-xirizhi';
 
 // 使用
 const html = render('# Hello World!');
@@ -48,7 +48,7 @@ const html = render('# Hello World!');
 
 ```typescript
 // 自动获得类型支持
-import { render, createRenderer, RenderOptions } from 'markdown-renderer-multi';
+import { render, createRenderer, RenderOptions } from 'markdown-renderer-xirizhi';
 
 // 类型安全的使用
 const options: RenderOptions = {

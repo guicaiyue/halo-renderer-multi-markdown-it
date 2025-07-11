@@ -1,6 +1,6 @@
 # 测试文件目录
 
-这个目录包含了 `markdown-renderer-multi` 的所有测试文件和相关资源。
+这个目录包含了 `markdown-renderer-xirizhi` 的所有测试文件和相关资源。
 
 ## 文件说明
 

@@ -1,4 +1,4 @@
-# markdown-renderer-multi
+# markdown-renderer-xirizhi
 
 A powerful independent Markdown renderer with 23+ plugins support, converted from hexo-renderer-multi-markdown-it.
 
@@ -17,13 +17,13 @@ This renderer uses [Markdown-it](https://github.com/markdown-it/markdown-it) as 
 ## Installation
 
 ```bash
-npm install markdown-renderer-multi
+npm install markdown-renderer-xirizhi
 ```
 
 ## Quick Start
 
 ```javascript
-const MarkdownRenderer = require('markdown-renderer-multi');
+const MarkdownRenderer = require('markdown-renderer-xirizhi');
 
 // Basic usage
 const html = MarkdownRenderer.render('# Hello World\n\nThis is **bold** text.');

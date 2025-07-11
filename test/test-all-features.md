@@ -1,6 +1,6 @@
 # Markdown Renderer Multi - 完整功能测试文档
 
-这个文档包含了 `markdown-renderer-multi` 支持的所有 Markdown 格式，用于测试渲染器的完整功能。
+这个文档包含了 `markdown-renderer-xirizhi` 支持的所有 Markdown 格式，用于测试渲染器的完整功能。
 
 ## 基础 Markdown 语法
 
@@ -122,7 +122,7 @@ print(squares)
 
 ```bash
 # Shell 命令
-npm install markdown-renderer-multi
+npm install markdown-renderer-xirizhi
 node example.js
 git add .
 git commit -m "Add new features"
@@ -366,7 +366,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor i
 
 ## 结论
 
-这个测试文档包含了 `markdown-renderer-multi` 支持的所有主要功能：
+这个测试文档包含了 `markdown-renderer-xirizhi` 支持的所有主要功能：
 
 1. ✅ 基础 Markdown 语法
 2. ✅ 文本格式化（粗体、斜体、删除线等）

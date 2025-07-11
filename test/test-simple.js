@@ -1,5 +1,5 @@
 /**
- * Simple test for markdown-renderer-multi
+ * Simple test for markdown-renderer-xirizhi
  */
 
 const MarkdownRenderer = require('../dist/index');

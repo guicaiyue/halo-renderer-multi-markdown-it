@@ -1,4 +1,4 @@
-# markdown-renderer-multi
+# markdown-renderer-xirizhi
 
 一个功能强大的独立 Markdown 渲染器，支持 23+ 插件，由 hexo-renderer-multi-markdown-it 转换而来。
 
@@ -17,13 +17,13 @@
 ## 安装
 
 ```bash
-npm install markdown-renderer-multi
+npm install markdown-renderer-xirizhi
 ```
 
 ## 快速开始
 
 ```javascript
-const MarkdownRenderer = require('markdown-renderer-multi');
+const MarkdownRenderer = require('markdown-renderer-xirizhi');
 
 // 基本用法
 const html = MarkdownRenderer.render('# 你好世界\n\n这是 **粗体** 文本。');

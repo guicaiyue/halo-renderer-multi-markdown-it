@@ -7,24 +7,34 @@ It differs in that it takes (a subset of) LaTeX as input and relies on KaTeX
 for rendering output.
 */
 
-/*jslint node: true */
-'use strict';
+import MarkdownIt from 'markdown-it';
+import Token from 'markdown-it/lib/token.mjs';
+const katex = require('katex');
 
-var katex = require('katex');
+interface KatexOptions {
+    displayMode?: boolean;
+    throwOnError?: boolean;
+    [key: string]: any;
+}
 
-// Test if potential opening or closing delimieter
+interface DelimiterResult {
+    can_open: boolean;
+    can_close: boolean;
+}
+
+// Test if potential opening or closing delimiter
 // Assumes that there is a "$" at state.src[pos]
-function isValidDelim(state, pos) {
-    var prevChar, nextChar,
-        max = state.posMax,
-        can_open = true,
-        can_close = true;
+function isValidDelim(state: any, pos: number): DelimiterResult {
+    let prevChar: number, nextChar: number;
+    const max = state.posMax;
+    let can_open = true;
+    let can_close = true;
 
     prevChar = pos > 0 ? state.src.charCodeAt(pos - 1) : -1;
     nextChar = pos + 1 <= max ? state.src.charCodeAt(pos + 1) : -1;
 
     // Check non-whitespace conditions for opening and closing, and
-    // check that closing delimeter isn't followed by a number
+    // check that closing delimiter isn't followed by a number
     if (prevChar === 0x20/* " " */ || prevChar === 0x09/* \t */ ||
         (nextChar >= 0x30/* "0" */ && nextChar <= 0x39/* "9" */)) {
         can_close = false;
@@ -39,8 +49,8 @@ function isValidDelim(state, pos) {
     };
 }
 
-function math_inline(state, silent) {
-    var start, match, token, res, pos, esc_count;
+function math_inline(state: any, silent: boolean): boolean {
+    let start: number, match: number, token: Token, res: DelimiterResult, pos: number;
 
     if (state.src[state.pos] !== "$") { return false; }
 
@@ -51,10 +61,10 @@ function math_inline(state, silent) {
         return true;
     }
 
-    // First check for and bypass all properly escaped delimieters
+    // First check for and bypass all properly escaped delimiters
     // This loop will assume that the first leading backtick can not
     // be the first character in state.src, which is known since
-    // we have found an opening delimieter already.
+    // we have found an opening delimiter already.
     start = state.pos + 1;
     match = start;
     while ((match = state.src.indexOf("$", match)) !== -1) {
@@ -68,14 +78,14 @@ function math_inline(state, silent) {
         match += 1;
     }
 
-    // No closing delimter found.  Consume $ and continue.
+    // No closing delimiter found. Consume $ and continue.
     if (match === -1) {
         if (!silent) { state.pending += "$"; }
         state.pos = start;
         return true;
     }
 
-    // Check if we have empty content, ie: $$.  Do not parse.
+    // Check if we have empty content, ie: $$. Do not parse.
     if (match - start === 0) {
         if (!silent) { state.pending += "$$"; }
         state.pos = start + 1;
@@ -100,10 +110,10 @@ function math_inline(state, silent) {
     return true;
 }
 
-function math_block(state, start, end, silent) {
-    var firstLine, lastLine, next, lastPos, found = false, token,
-        pos = state.bMarks[start] + state.tShift[start],
-        max = state.eMarks[start]
+function math_block(state: any, start: number, end: number, silent: boolean): boolean {
+    let firstLine: string, lastLine: string = '', next: number, lastPos: number, found = false, token: Token;
+    let pos = state.bMarks[start] + state.tShift[start];
+    const max = state.eMarks[start];
 
     if (pos + 2 > max) { return false; }
     if (state.src.slice(pos, pos + 2) !== '$$') { return false; }
@@ -119,25 +129,23 @@ function math_block(state, start, end, silent) {
     }
 
     for (next = start; !found;) {
-
         next++;
 
         if (next >= end) { break; }
 
         pos = state.bMarks[next] + state.tShift[next];
-        max = state.eMarks[next];
+        const maxNext = state.eMarks[next];
 
-        if (pos < max && state.tShift[next] < state.blkIndent) {
+        if (pos < maxNext && state.tShift[next] < state.blkIndent) {
             // non-empty line with negative indent should stop the list:
             break;
         }
 
-        if (state.src.slice(pos, max).trim().slice(-2) === '$$') {
-            lastPos = state.src.slice(0, max).lastIndexOf('$$');
+        if (state.src.slice(pos, maxNext).trim().slice(-2) === '$$') {
+            lastPos = state.src.slice(0, maxNext).lastIndexOf('$$');
             lastLine = state.src.slice(pos, lastPos);
             found = true;
         }
-
     }
 
     state.line = next + 1;
@@ -152,41 +160,40 @@ function math_block(state, start, end, silent) {
     return true;
 }
 
-module.exports = function math_plugin(md, options) {
+module.exports = function math_plugin(md: MarkdownIt, options?: KatexOptions): void {
     // Default options
-
-    options = options || {};
+    const opts: KatexOptions = options || {};
 
     // set KaTeX as the renderer for markdown-it-simplemath
-    var katexInline = function (latex) {
-        options.displayMode = false;
+    const katexInline = function (latex: string): string {
+        opts.displayMode = false;
         try {
-            return katex.renderToString(latex, options);
+            return katex.renderToString(latex, opts);
         }
-        catch (error) {
-            if (options.throwOnError) { console.log(error); }
+        catch (error: any) {
+            if (opts.throwOnError) { console.log(error); }
             return latex;
         }
     };
 
-    var inlineRenderer = function (tokens, idx) {
+    const inlineRenderer = function (tokens: Token[], idx: number): string {
         return katexInline(tokens[idx].content);
     };
 
-    var katexBlock = function (latex) {
-        options.displayMode = true;
+    const katexBlock = function (latex: string): string {
+        opts.displayMode = true;
         try {
-            return "<p>" + katex.renderToString(latex, options) + "</p>";
+            return "<p>" + katex.renderToString(latex, opts) + "</p>";
         }
-        catch (error) {
-            if (options.throwOnError) { console.log(error); }
+        catch (error: any) {
+            if (opts.throwOnError) { console.log(error); }
             return latex;
         }
-    }
+    };
 
-    var blockRenderer = function (tokens, idx) {
+    const blockRenderer = function (tokens: Token[], idx: number): string {
         return katexBlock(tokens[idx].content) + '\n';
-    }
+    };
 
     md.inline.ruler.after('escape', 'math_inline', math_inline);
     md.block.ruler.after('blockquote', 'math_block', math_block, {

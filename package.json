@@ -1,6 +1,6 @@
 {
   "name": "markdown-renderer-xirizhi",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A powerful independent Markdown renderer with 23+ plugins support, converted from hexo-renderer-multi-markdown-it.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,8 @@
   "files": [
     "dist/",
     "lib/renderer/",
-    "types/"
+    "types/",
+    "browser/"
   ],
   "author": "Ruri Shimotsuki",
   "license": "MIT",
@@ -53,7 +54,9 @@
     "node": ">=8.6.0"
   },
   "scripts": {
-    "build": "tsc && cpx \"lib/renderer/markdown-it-*/**/*.{js,html}\" dist/lib/renderer/ --verbose",
+    "build:node": "tsc && cpx \"lib/renderer/markdown-it-*/**/*.{js,html}\" dist/lib/renderer/ --verbose",
+    "build:browser": "esbuild index.ts --bundle --outfile=browser/markdown-it.js --platform=browser --global-name=MarkdownRenderer",
+    "build": "npm run build:node && npm run build:browser",
     "dev": "tsc --watch",
     "test": "npm run build && node test/test-simple.js",
     "test-all": "npm run build && node test/test-all-features.js",
@@ -66,6 +69,7 @@
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^24.0.12",
     "cpx": "^1.5.0",
+    "esbuild": "^0.25.6",
     "typescript": "^5.8.3"
   }
 }

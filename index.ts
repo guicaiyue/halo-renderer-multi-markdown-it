@@ -217,5 +217,3 @@ const markdownRenderer = {
 export default markdownRenderer;
 
 // For CommonJS compatibility
-module.exports = markdownRenderer;
-module.exports.default = markdownRenderer;

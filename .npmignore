@@ -1,0 +1,53 @@
+# 开发和构建文件
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+
+# 源码文件（只发布编译后的文件）
+src/
+
+# 测试文件
+test/
+__tests__/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# 开发配置文件
+.eslintrc*
+.prettierrc*
+tsconfig.json
+webpack.config.js
+rollup.config.js
+.babelrc*
+jest.config.js
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+*.temp
+
+# 大型第三方库文件（这些文件太大，不适合发布到 npm）
+lib/renderer/markdown-it-graphviz/common/full.render.js
+
+# 文档文件（可选，如果不想包含在包中）
+*.md
+!README.md
+
+# Git 相关
+.git/
+.gitignore
+
+# 其他
+node_modules/
+coverage/
+.nyc_output/

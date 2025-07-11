@@ -24,15 +24,15 @@ const default_plugins: string[] = [
     'markdown-it-task-checkbox',
     'markdown-it-toc-and-anchor',
     'markdown-it-pangu',
-    './lib/renderer/markdown-it-container',
-    './lib/renderer/markdown-it-furigana',
-    './lib/renderer/markdown-it-katex',
-    './lib/renderer/markdown-it-mermaid',
-    './lib/renderer/markdown-it-graphviz',
-    './lib/renderer/markdown-it-prism',
-    './lib/renderer/markdown-it-chart',
-    './lib/renderer/markdown-it-spoiler',
-    './lib/renderer/markdown-it-excerpt'
+    require.resolve('./lib/renderer/markdown-it-container'),
+    require.resolve('./lib/renderer/markdown-it-furigana'),
+    require.resolve('./lib/renderer/markdown-it-katex'),
+    require.resolve('./lib/renderer/markdown-it-mermaid'),
+    require.resolve('./lib/renderer/markdown-it-graphviz'),
+    require.resolve('./lib/renderer/markdown-it-prism'),
+    require.resolve('./lib/renderer/markdown-it-chart'),
+    require.resolve('./lib/renderer/markdown-it-spoiler'),
+    require.resolve('./lib/renderer/markdown-it-excerpt')
 ];
 
 // Default configuration

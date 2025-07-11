@@ -51,6 +51,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史记录用于版本比较
     
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -68,8 +70,63 @@ jobs:
     - name: Run final tests
       run: npm run test-ci
     
-    # Uncomment the following steps when ready to auto-publish
-    # - name: Publish to npm
-    #   run: npm publish
-    #   env:
-    #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - name: Check version and decide publish
+      id: version-check
+      run: |
+        # 获取当前版本
+        CURRENT_VERSION=$(node -p "require('./package.json').version")
+        echo "Current version: $CURRENT_VERSION"
+        
+        # 获取已发布的版本
+        PUBLISHED_VERSION=$(npm view $(node -p "require('./package.json').name") version 2>/dev/null || echo "0.0.0")
+        echo "Published version: $PUBLISHED_VERSION"
+        
+        # 简单比较版本，不一致就发布
+        if [ "$CURRENT_VERSION" != "$PUBLISHED_VERSION" ]; then
+          echo "Version mismatch detected: $CURRENT_VERSION vs $PUBLISHED_VERSION"
+          echo "Will publish new version: $CURRENT_VERSION"
+          echo "should-publish=true" >> $GITHUB_OUTPUT
+          echo "new-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+        else
+          echo "Version $CURRENT_VERSION already published, skipping"
+          echo "should-publish=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Create Git tag
+      if: steps.version-check.outputs.should-publish == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag "v${{ steps.version-check.outputs.new-version }}"
+        git push origin "v${{ steps.version-check.outputs.new-version }}"
+    
+    - name: Publish to npm
+      if: steps.version-check.outputs.should-publish == 'true'
+      run: |
+        echo "Publishing version ${{ steps.version-check.outputs.new-version }} to npm..."
+        npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    
+    - name: Create GitHub Release
+      if: steps.version-check.outputs.should-publish == 'true'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: "v${{ steps.version-check.outputs.new-version }}"
+        release_name: "Release v${{ steps.version-check.outputs.new-version }}"
+        body: |
+          ## 🚀 Release v${{ steps.version-check.outputs.new-version }}
+          
+          ### 📦 Changes
+          - Auto-generated release from CI/CD pipeline
+          - All tests passed ✅
+          - Package published to NPM 📦
+          
+          ### 📥 Installation
+          ```bash
+          npm install $(node -p "require('./package.json').name")@${{ steps.version-check.outputs.new-version }}
+          ```
+        draft: false
+        prerelease: false

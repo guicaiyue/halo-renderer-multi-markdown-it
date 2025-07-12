@@ -1,17 +1,68 @@
 /**
- * 测试所有功能的脚本
- * 使用 test-all-features.md 文件测试渲染器的完整功能
+ * 统一功能测试脚本
+ * 包含了模块加载、插件功能及完整渲染测试
  */
 
 const fs = require('fs');
 const path = require('path');
-const MarkdownRenderer = require('../dist/index');
+const MarkdownIt = require('markdown-it');
+
+console.log('=== 开始统一功能测试 ===');
+
+// 1. 模块加载测试
+console.log('\n--- 模块加载测试 ---');
+let MarkdownRenderer;
+try {
+    MarkdownRenderer = require('../dist/index');
+    console.log('✅ 主模块加载成功');
+    if (typeof MarkdownRenderer.render !== 'function' || typeof MarkdownRenderer.createRenderer !== 'function') {
+        throw new Error('导出的函数不完整');
+    }
+    console.log('✅ 导出函数检查通过');
+} catch (error) {
+    console.error('❌ 主模块加载失败:', error.message);
+    process.exit(1);
+}
+
+// 2. 插件加载与功能测试
+console.log('\n--- 插件加载与功能测试 ---');
+
+function testAttrsPlugin() {
+    console.log('  -> 测试 markdown-it-attrs 插件...');
+    const md = new MarkdownIt().use(require('markdown-it-attrs'));
+    const input = `段落{.red}`;
+    const output = md.render(input);
+    if (output.includes('class="red"')) {
+        console.log('✅ markdown-it-attrs 功能正常');
+    } else {
+        console.error('❌ markdown-it-attrs 功能异常');
+        process.exit(1);
+    }
+}
+
+function testContainerPlugin() {
+    console.log('  -> 测试 markdown-it-container 插件...');
+    const md = new MarkdownIt().use(require('markdown-it-container'), 'warning');
+    const input = `::: warning\n内容\n:::`;
+    const output = md.render(input);
+    if (output.includes('<div class="warning">')) {
+        console.log('✅ markdown-it-container 功能正常');
+    } else {
+        console.error('❌ markdown-it-container 功能异常');
+        process.exit(1);
+    }
+}
+
+testAttrsPlugin();
+testContainerPlugin();
+
+// 3. 完整渲染测试
+console.log('\n--- 完整渲染测试 ---');
 
 // 读取测试文档
 const testMarkdownPath = path.join(__dirname, 'test-all-features.md');
 const testMarkdown = fs.readFileSync(testMarkdownPath, 'utf8');
 
-console.log('=== 开始测试所有功能 ===');
 console.log(`测试文档大小: ${testMarkdown.length} 字符`);
 console.log('渲染中...');
 

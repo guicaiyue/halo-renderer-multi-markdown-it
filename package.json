@@ -26,7 +26,6 @@
   "bugs": "https://github.com/amehime/hexo-renderer-multi-markdown-it/issues",
   "homepage": "https://github.com/amehime/hexo-renderer-multi-markdown-it",
   "dependencies": {
-    "deasync-promise": "^1.0.1",
     "frappe-charts": "^1.6.2",
     "katex": "^0.16.22",
     "markdown-it": "^14.1.0",
@@ -46,8 +45,7 @@
     "markdown-it-sup": "^2.0.0",
     "markdown-it-task-checkbox": "^1.0.6",
     "markdown-it-toc-and-anchor": "^4.2.0",
-    "prismjs": "^1.30.0",
-    "puppeteer": "^24.12.1"
+    "prismjs": "^1.30.0"
   },
   "engines": {
     "node": ">=8.6.0"
@@ -55,12 +53,9 @@
   "scripts": {
     "build": "tsc && cpx \"lib/renderer/markdown-it-*/**/*.{js,html}\" dist/lib/renderer/ --verbose",
     "dev": "tsc --watch",
-    "test": "npm run build && node test/test-simple.js",
-    "test-all": "npm run build && node test/test-all-features.js",
-    "test-modules": "npm run build && node test/test-module-loading.js",
+    "test": "npm run build && node test/test-ci.js",
     "test-ci": "node test/test-ci.js",
-    "pretest": "npm run test-modules",
-    "prepublishOnly": "npm run test-ci"
+    "prepublishOnly": "npm run test"
   },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",

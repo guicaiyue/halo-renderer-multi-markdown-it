@@ -1,49 +1,49 @@
 # markdown-renderer-xirizhi
 
-A powerful independent Markdown renderer with 23+ plugins support, converted from hexo-renderer-multi-markdown-it.
+一个功能强大的独立 Markdown 渲染器，支持 23+ 插件，由 hexo-renderer-multi-markdown-it 转换而来。
 
-This renderer uses [Markdown-it](https://github.com/markdown-it/markdown-it) as the rendering engine and includes many useful plugins for enhanced Markdown functionality.
+该渲染器使用 [Markdown-it](https://github.com/markdown-it/markdown-it) 作为渲染引擎，并包含许多有用的插件来增强 Markdown 功能。
 
-## Features
+## 特性
 
-- 🚀 **Independent**: No framework dependency, works with any Node.js project
-- 🔌 **23+ Plugins**: Rich set of markdown-it plugins included
-- ⚙️ **Configurable**: Flexible plugin and rendering options
-- 🎯 **Easy to Use**: Simple API with sensible defaults
-- 📝 **TypeScript Ready**: Can be easily extended with TypeScript definitions
-- 🌐 **Multi-language**: Support for various languages including Japanese furigana
-- 🎨 **Rich Content**: Math formulas, diagrams, charts, and interactive elements
+- 🚀 **独立性**：无框架依赖，适用于任何 Node.js 项目
+- 🔌 **23+ 插件**：包含丰富的 markdown-it 插件集
+- ⚙️ **可配置**：灵活的插件和渲染选项
+- 🎯 **易于使用**：简单的 API 和合理的默认设置
+- 📝 **TypeScript 就绪**：可轻松扩展 TypeScript 定义
+- 🌐 **多语言**：支持多种语言，包括日语假名
+- 🎨 **丰富内容**：数学公式、图表、图形和交互元素
 
-## Installation
+## 安装
 
 ```bash
 npm install markdown-renderer-xirizhi
 ```
 
-## Quick Start
+## 快速开始
 
 ```javascript
 const MarkdownRenderer = require('markdown-renderer-xirizhi');
 
-// Basic usage
-const html = MarkdownRenderer.render('# Hello World\n\nThis is **bold** text.');
+// 基本用法
+const html = MarkdownRenderer.render('# 你好世界\n\n这是 **粗体** 文本。');
 console.log(html);
-// Output: <h1>Hello World</h1>\n<p>This is <strong>bold</strong> text.</p>
+// 输出: <h1>你好世界</h1>\n<p>这是 <strong>粗体</strong> 文本。</p>
 ```
 
-## API Reference
+## API 参考
 
 ### `render(markdown, options)`
 
-Render markdown text to HTML.
+将 markdown 文本渲染为 HTML。
 
-**Parameters:**
-- `markdown` (string): The markdown text to render
-- `options` (object, optional): Configuration options
+**参数：**
+- `markdown` (string)：要渲染的 markdown 文本
+- `options` (object, 可选)：配置选项
 
-**Returns:** HTML string
+**返回值：** HTML 字符串
 
-**Example:**
+**示例：**
 ```javascript
 const html = MarkdownRenderer.render(markdownText, {
     render: {
@@ -63,297 +63,160 @@ const html = MarkdownRenderer.render(markdownText, {
 
 ### `createRenderer(defaultOptions)`
 
-Create a configured renderer instance with preset options.
+创建一个带有预设选项的配置渲染器实例。
 
-**Parameters:**
-- `defaultOptions` (object): Default configuration for this instance
+**参数：**
+- `defaultOptions` (object)：此实例的默认配置
 
-**Returns:** Render function
+**返回值：** 渲染函数
 
-**Example:**
+**示例：**
 ```javascript
 const myRenderer = MarkdownRenderer.createRenderer({
     render: { breaks: true },
     plugins: [{ name: 'markdown-it-emoji', enable: true }]
 });
 
-const html = myRenderer('Hello :smile:');
+const html = myRenderer('你好 :smile:');
 ```
 
-## Configuration Options
+## 配置选项
 
-### Render Options
+### 渲染选项
 
 ```javascript
 {
     render: {
-        html: true,         // Enable HTML tags in source
-        xhtmlOut: false,    // Use '/' to close single tags (<br />)
-        breaks: true,       // Convert '\n' in paragraphs into <br>
-        linkify: true,      // Autoconvert URL-like text to links
-        typographer: true,  // Enable some language-neutral replacement + quotes beautification
-        quotes: '""''',     // Double + single quotes replacement pairs
-        tab: ''             // Tab replacement
+        html: true,         // 启用源码中的 HTML 标签
+        xhtmlOut: false,    // 使用 '/' 关闭单标签 (<br />)
+        breaks: true,       // 将段落中的 '\n' 转换为 <br>
+        linkify: true,      // 自动转换类似 URL 的文本为链接
+        typographer: true,  // 启用一些语言中性的替换 + 引号美化
+        quotes: '""\'\'',     // 双引号 + 单引号替换对
+        tab: ''             // Tab 替换
     }
 }
 ```
 
-### Plugin Configuration
+### 插件配置
 
 ```javascript
 {
     plugins: [
         {
-            name: 'plugin-name',     // Plugin name or path
-            enable: true,            // Enable/disable plugin
-            options: {}              // Plugin-specific options
+            name: 'plugin-name',     // 插件名称或路径
+            enable: true,            // 启用/禁用插件
+            options: {}              // 插件特定选项
         }
     ]
 }
 ```
 
-## Supported Plugins
+## 支持的插件
 
-### Text Formatting
-- **markdown-it-sub**: `H~2~O` → H<sub>2</sub>O
-- **markdown-it-sup**: `29^th^` → 29<sup>th</sup>
-- **markdown-it-ins**: `++inserted++` → <ins>inserted</ins>
-- **markdown-it-mark**: `==marked==` → <mark>marked</mark>
-- **markdown-it-abbr**: Abbreviations support
-- **markdown-it-attrs**: Add attributes to elements
+### 文本格式化
+- **markdown-it-sub**：`H~2~O` → H<sub>2</sub>O
+- **markdown-it-sup**：`29^th^` → 29<sup>th</sup>
+- **markdown-it-ins**：`++插入++` → <ins>插入</ins>
+- **markdown-it-mark**：`==标记==` → <mark>标记</mark>
+- **markdown-it-abbr**：缩写支持
+- **markdown-it-attrs**：为元素添加属性
 
-### Lists and Structure
-- **markdown-it-deflist**: Definition lists
-- **markdown-it-task-checkbox**: Task lists with checkboxes
-- **markdown-it-toc-and-anchor**: Table of contents and anchors
-- **markdown-it-container**: Custom containers (info, warning, etc.)
-- **markdown-it-multimd-table**: Enhanced tables with multiline support
+### 列表和结构
+- **markdown-it-deflist**：定义列表
+- **markdown-it-task-checkbox**：带复选框的任务列表
+- **markdown-it-toc-and-anchor**：目录和锚点
+- **markdown-it-container**：自定义容器（信息、警告等）
+- **markdown-it-multimd-table**：支持多行的增强表格
 
-### Interactive Content
-- **markdown-it-emoji**: `:smile:` → 😄
-- **markdown-it-footnote**: Footnotes support
-- **markdown-it-spoiler**: `!!spoiler content!!` → hidden text
+### 交互内容
+- **markdown-it-emoji**：`:smile:` → 😄
+- **markdown-it-footnote**：脚注支持
+- **markdown-it-spoiler**：`!!剧透内容!!` → 隐藏文本
 
-### Math and Science
-- **markdown-it-katex**: LaTeX math rendering
+### 数学和科学
+- **markdown-it-katex**：LaTeX 数学渲染
   ```markdown
   $$E = mc^2$$
   ```
 
-### Code and Syntax
-- **markdown-it-prism**: Code syntax highlighting with Prism.js
-  - Support for line marking: ` mark:1,3-4`
-  - Command highlighting: ` command:{["$ ":1-2]["#":5-6]}`
+### 代码和语法
+- **markdown-it-prism**：使用 Prism.js 的代码语法高亮
+  - 支持行标记：` mark:1,3-4`
+  - 命令高亮：` command:{["$ ":1-2]["#":5-6]}`
   ```markdown
   ```javascript
-  console.log('Hello World');
+  console.log('你好世界');
   ```
   ```
 
-### Diagrams and Charts
-- **markdown-it-mermaid**: Mermaid diagrams
-- **markdown-it-graphviz**: Graphviz diagrams  
-- **markdown-it-chart**: Frappe Charts
+### 图表和图形
+- **markdown-it-mermaid**：Mermaid 图表
+- **markdown-it-graphviz**：Graphviz 图形
+- **markdown-it-chart**：Frappe 图表
 
-### Language-Specific
-- **markdown-it-furigana**: Japanese furigana notation
+### 语言特定
+- **markdown-it-furigana**：日语假名标注
   ```markdown
   {可愛い犬^か+わい・い・いぬ}
   ```
-- **markdown-it-pangu**: Chinese typography optimization
+- **markdown-it-pangu**：中文排版优化
 
-### Utility
-- **markdown-it-bracketed-spans**: Bracketed spans support
-- **markdown-it-excerpt**: Content excerpts
+### 实用工具
+- **markdown-it-bracketed-spans**：括号跨度支持
+- **markdown-it-excerpt**：内容摘录
 
-## Examples
+## 完整功能的外部依赖
 
-### Basic Markdown Features
+某些插件需要在您的 HTML 中包含外部资源：
 
-```javascript
-const markdown = `
-# Heading 1
-## Heading 2
-
-**Bold text** and *italic text*
-
-- List item 1
-- List item 2
-
-[Link](https://example.com)
-`;
-
-const html = MarkdownRenderer.render(markdown);
-```
-
-### Advanced Features
-
-```javascript
-const advancedMarkdown = `
-# Advanced Features Demo
-
-## Math
-$$\\sum_{i=1}^{n} x_i = x_1 + x_2 + \\cdots + x_n$$
-
-## Code with Highlighting
-\`\`\`javascript
-function fibonacci(n) {
-    return n <= 1 ? n : fibonacci(n-1) + fibonacci(n-2);
-}
-\`\`\`
-
-## Task List
-- [x] Completed task
-- [ ] Pending task
-
-## Footnotes
-This text has a footnote[^1].
-
-[^1]: This is the footnote.
-
-## Emoji
-Hello :wave: World :earth_americas:
-
-## Japanese Furigana
-{東京^とうきょう}は{日本^にほん}の{首都^しゅと}です。
-
-## Spoiler
-!!This is hidden content!!
-`;
-
-const html = MarkdownRenderer.render(advancedMarkdown);
-```
-
-### Custom Plugin Configuration
-
-```javascript
-const html = MarkdownRenderer.render(markdown, {
-    plugins: [
-        {
-            name: 'markdown-it-emoji',
-            enable: true,
-            options: {
-                defs: {
-                    ':custom:': '🎉'
-                }
-            }
-        },
-        {
-            name: './lib/renderer/markdown-it-spoiler',
-            enable: true,
-            options: {
-                title: 'Click to reveal'
-            }
-        },
-        {
-            name: 'markdown-it-katex',
-            enable: false  // Disable math rendering
-        }
-    ]
-});
-```
-
-## Testing
-
-The package includes comprehensive tests to verify functionality:
-
-```bash
-# Run simple functionality test
-node test/test-simple.js
-
-# Run comprehensive feature test
-node test/test-all-features.js
-
-# Run usage examples
-node test/examples.js
-```
-
-## Error Handling
-
-```javascript
-try {
-    const html = MarkdownRenderer.render(markdownText);
-    console.log(html);
-} catch (error) {
-    console.error('Rendering failed:', error.message);
-}
-```
-
-## Performance
-
-Based on comprehensive testing:
-- **Input**: ~15KB markdown document with all features
-- **Render time**: ~600ms
-- **Output**: ~40KB HTML
-- **Memory**: Efficient plugin loading and caching
-
-## Requirements
-
-- Node.js 12.0.0 or higher
-- Dependencies are automatically installed via npm
-
-## External Dependencies for Full Functionality
-
-Some plugins require external resources to be included in your HTML:
-
-### Math Rendering (KaTeX)
+### 数学渲染 (KaTeX)
 ```html
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@0/dist/katex.min.css">
 ```
 
-### Diagrams (Mermaid)
+### 图表 (Mermaid)
 ```html
 <script src="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 ```
 
-### Charts (Frappe Charts)
+### 图形 (Frappe Charts)
 ```html
 <script src="//cdn.jsdelivr.net/npm/frappe-charts/dist/frappe-charts.min.iife.js"></script>
 ```
 
-## Contributing
+## 开发与贡献
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### TypeScript 迁移
+本项目已从 JavaScript 迁移到 TypeScript，以提供更好的类型安全和开发体验。编译后的包对 JavaScript 项目完全兼容，无需额外配置。
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- **JS 项目使用**: `const { render } = require('markdown-renderer-xirizhi');`
+- **TS 项目使用**: `import { render } from 'markdown-renderer-xirizhi';` (自动获得类型支持)
 
-### For Developers
+### 开发流程
+1.  **安装依赖**: `npm install`
+2.  **编译**: `npm run build`
+3.  **测试**: `npm test` (基础测试), `npm run test-all` (完整测试)
 
-If you're interested in contributing to the codebase, please check out our [IMPROVEMENT_SUGGESTIONS.md](./IMPROVEMENT_SUGGESTIONS.md) for detailed technical improvement plans and development guidelines.
+### 自动化发布
+项目采用基于版本号的自动发布流程。开发者只需在本地通过 `npm version <patch|minor|major>` 更新版本号并推送到 `main` 分支，GitHub Actions 将会自动完成测试、发布 NPM 包和创建 GitHub Release 的全部流程。
 
-## License
+**发布步骤:**
+1.  更新版本: `npm version patch`
+2.  提交推送: `git push origin main --tags`
 
-MIT License - see LICENSE file for details.
+### 贡献
+欢迎任何形式的贡献！请 Fork 仓库并提交 Pull Request。
 
-## Credits
+## 许可证
 
-This project is converted from [hexo-renderer-multi-markdown-it](https://github.com/amehime/hexo-renderer-multi-markdown-it) to work as an independent package.
+MIT 许可证 - 详见 LICENSE 文件。
 
-Special thanks to:
-- [markdown-it](https://github.com/markdown-it/markdown-it) - The core rendering engine
-- All the plugin authors who created the amazing extensions
-- The original hexo-renderer-multi-markdown-it contributors
+## 致谢
 
-## Roadmap
+该项目由 [hexo-renderer-multi-markdown-it](https://github.com/amehime/hexo-renderer-multi-markdown-it) 转换而来，作为独立包使用。
 
-### Planned Features
-- **TypeScript Support**: Full TypeScript definitions for better development experience
-- **Enhanced Error Handling**: More detailed error messages and recovery strategies
-- **Performance Optimization**: Plugin lazy loading and render caching
-- **Security Enhancements**: Input validation and sanitization
-- **Modular Architecture**: Refactored plugin system for better maintainability
-
-See [IMPROVEMENT_SUGGESTIONS.md](./IMPROVEMENT_SUGGESTIONS.md) for detailed technical improvement plans.
-
-## Changelog
-
-### v1.0.0
-- Initial release as independent package
-- Removed Hexo dependencies
-- Added comprehensive test suite
-- Improved error handling
-- Enhanced documentation
+特别感谢：
+- [markdown-it](https://github.com/markdown-it/markdown-it) - 核心渲染引擎
+- 所有创建了出色扩展的插件作者
+- 原始 hexo-renderer-multi-markdown-it 贡献者

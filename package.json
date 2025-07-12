@@ -1,10 +1,16 @@
 {
   "name": "markdown-renderer-xirizhi",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A powerful independent Markdown renderer with 23+ plugins support, converted from hexo-renderer-multi-markdown-it.",
   "main": "dist/index.js",
   "browser": "dist/bundle.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
   "repository": "https://github.com/amehime/markdown-renderer-xirizhi.git",
   "keywords": [
     "markdown",

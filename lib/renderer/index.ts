@@ -14,7 +14,8 @@ const default_plugins: string[] = [
     'markdown-it-sub',
     'markdown-it-sup',
     'markdown-it-task-checkbox',
-    'markdown-it-toc-and-anchor',
+    'markdown-it-anchor',
+    'markdown-it-toc-done-right',
     'markdown-it-pangu',
     './markdown-it-container',
     './markdown-it-furigana',
@@ -134,12 +135,6 @@ function legacyRenderer(this: LegacyContext, data: RenderData, options?: any): s
                 if (pluginConfig.name === 'markdown-it-emoji' && typeof plugin === 'object') {
                     // markdown-it-emoji 导出 { bare, full, light }，使用 full 版本
                     plugin = (plugin as any).full || (plugin as any).bare;
-                }
-
-                // 跳过有问题的插件
-                if (pluginConfig.name === 'markdown-it-toc-and-anchor') {
-                    console.warn(`Skipping ${pluginConfig.name} due to dependency issues`);
-                    return parser;
                 }
 
                 if (typeof plugin !== 'function') {

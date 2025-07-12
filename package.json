@@ -9,6 +9,10 @@
     ".": {
       "import": "./dist/index.js",
       "require": "./dist/index.js"
+    },
+    "./browser": {
+      "import": "./dist/bundle.js",
+      "require": "./dist/bundle.js"
     }
   },
   "repository": "https://github.com/amehime/markdown-renderer-xirizhi.git",

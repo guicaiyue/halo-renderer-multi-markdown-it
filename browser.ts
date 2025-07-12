@@ -19,7 +19,8 @@ import * as markdownItMultimdTable from 'markdown-it-multimd-table';
 import * as markdownItSub from 'markdown-it-sub';
 import * as markdownItSup from 'markdown-it-sup';
 import * as markdownItTaskCheckbox from 'markdown-it-task-checkbox';
-import * as markdownItTocAndAnchor from 'markdown-it-toc-and-anchor';
+import * as markdownItAnchor from 'markdown-it-anchor';
+import * as markdownItTocDoneRight from 'markdown-it-toc-done-right';
 import * as markdownItPangu from 'markdown-it-pangu';
 import * as markdownItContainer from './lib/renderer/markdown-it-container';
 import * as markdownItFurigana from './lib/renderer/markdown-it-furigana';
@@ -45,7 +46,8 @@ const browserPlugins: PluginConfig[] = [
     { name: markdownItSub },
     { name: markdownItSup },
     { name: markdownItTaskCheckbox },
-    { name: markdownItTocAndAnchor },
+    { name: markdownItAnchor },
+    { name: markdownItTocDoneRight },
     { name: markdownItPangu },
     { name: markdownItContainer },
     { name: markdownItFurigana },

@@ -10,5 +10,6 @@ declare module 'markdown-it-multimd-table';
 declare module 'markdown-it-sub';
 declare module 'markdown-it-sup';
 declare module 'markdown-it-task-checkbox';
-declare module 'markdown-it-toc-and-anchor';
+declare module 'markdown-it-anchor';
+declare module 'markdown-it-toc-done-right';
 declare module 'markdown-it-pangu';

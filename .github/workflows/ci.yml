@@ -65,7 +65,9 @@ jobs:
       run: npm ci
     
     - name: Build package
-      run: npm run build
+      run: |
+        npm run build
+        npm run build:browser
     
     - name: Run final tests
       run: npm run test-ci

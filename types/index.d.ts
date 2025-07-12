@@ -31,8 +31,8 @@ export interface PluginOptions {
  * 单个插件的配置
  */
 export interface PluginConfig {
-  /** 插件名称 */
-  name: string;
+  /** 插件名称或插件本身 */
+  name: string | MarkdownItPlugin;
   /** 是否启用该插件 (默认: true) */
   enable?: boolean;
   /** 插件的具体配置选项 */
@@ -53,8 +53,8 @@ export interface RendererConfig {
  * 处理后的插件配置 (内部使用)
  */
 export interface ProcessedPlugin {
-  /** 插件名称 */
-  name: string;
+  /** 插件名称或插件本身 */
+  name: string | MarkdownItPlugin;
   /** 是否启用 */
   enable: boolean;
   /** 插件选项 */

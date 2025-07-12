@@ -24,7 +24,7 @@ module.exports = (md: MarkdownIt, options?: ChartPluginOptions): void => {
         if (token.info === 'chart') {
             const r = guid();
 
-            return `<div id="chart${r}"></div>
+            return `<div id="chart${r}" class="chart-container"></div>
             <script type="text/javascript">
                 var chart${r} = new frappe.Chart(document.getElementById('chart${r}'), ${code});
                 window.addEventListener('pjax:send', function() {

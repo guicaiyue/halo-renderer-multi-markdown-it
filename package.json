@@ -1,8 +1,9 @@
 {
   "name": "markdown-renderer-xirizhi",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "A powerful independent Markdown renderer with 23+ plugins support, converted from hexo-renderer-multi-markdown-it.",
   "main": "dist/index.js",
+  "browser": "dist/bundle.js",
   "types": "dist/index.d.ts",
   "repository": "https://github.com/amehime/markdown-renderer-xirizhi.git",
   "keywords": [
@@ -30,6 +31,7 @@
     "katex": "^0.16.22",
     "markdown-it": "^14.1.0",
     "markdown-it-abbr": "^2.0.0",
+    "markdown-it-anchor": "^9.2.0",
     "markdown-it-attrs": "^4.3.1",
     "markdown-it-bracketed-spans": "^1.0.1",
     "markdown-it-charts": "^1.0.5",
@@ -44,7 +46,7 @@
     "markdown-it-sub": "^2.0.0",
     "markdown-it-sup": "^2.0.0",
     "markdown-it-task-checkbox": "^1.0.6",
-    "markdown-it-toc-and-anchor": "^4.2.0",
+    "markdown-it-toc-done-right": "^4.2.0",
     "prismjs": "^1.30.0"
   },
   "engines": {
@@ -52,6 +54,7 @@
   },
   "scripts": {
     "build": "tsc && cpx \"lib/renderer/markdown-it-*/**/*.{js,html}\" dist/lib/renderer/ --verbose",
+    "build:browser": "webpack",
     "dev": "tsc --watch",
     "test": "npm run build && node test/test-ci.js",
     "test-ci": "node test/test-ci.js",
@@ -61,6 +64,11 @@
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^24.0.12",
     "cpx": "^1.5.0",
-    "typescript": "^5.8.3"
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.100.1",
+    "webpack-cli": "^6.0.1"
   }
 }

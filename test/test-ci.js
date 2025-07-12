@@ -7,6 +7,12 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+console.log('Cleaning dist directory...');
+fs.rmSync(path.join(__dirname, '..', 'dist'), { recursive: true, force: true });
+console.log('Building project...');
+execSync('npm run build', { stdio: 'inherit' });
+console.log('Build complete.');
+
 console.log('🚀 开始 CI/CD 自动化测试');
 console.log('=' .repeat(50));
 
@@ -17,6 +23,12 @@ try {
     execSync('node test/test-all-features.js', { 
         cwd: path.join(__dirname, '..'),
         stdio: 'inherit' // 使用 inherit 以便实时看到测试输出
+    });
+    
+    console.log('\n运行图表插件测试 (test-chart-plugin.js)...');
+    execSync('node test/single/test-chart-plugin.js', {
+        cwd: path.join(__dirname, '..'),
+        stdio: 'inherit'
     });
     
     console.log('\n' + '=' .repeat(50));

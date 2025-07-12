@@ -59,7 +59,7 @@ const default_config: {
  */
 function processPlugins(plugins: PluginConfig[] = []): ProcessedPlugin[] {
     const default_plugins_map: Record<string, ProcessedPlugin> = {};
-    
+
     // Initialize default plugins
     for (const plugin_name of default_plugins) {
         default_plugins_map[plugin_name] = {
@@ -76,7 +76,7 @@ function processPlugins(plugins: PluginConfig[] = []): ProcessedPlugin[] {
         if (!plugin_config || typeof plugin_config !== 'object') {
             continue;
         }
-        
+
         const plugin_name = plugin_config.name;
         if (!plugin_name) {
             continue;
@@ -85,15 +85,15 @@ function processPlugins(plugins: PluginConfig[] = []): ProcessedPlugin[] {
         const enable = plugin_config.enable !== false; // Default to true
         const options = plugin_config.options || {};
 
-        if (default_plugins_map[plugin_name]) {
-            // Update default plugin configuration
+        // If the plugin is provided as a string, check if it's a default plugin
+        if (typeof plugin_name === 'string' && default_plugins_map[plugin_name]) {
             default_plugins_map[plugin_name] = {
                 name: plugin_name,
                 enable,
                 options
             };
         } else {
-            // Add custom plugin
+            // Otherwise, treat it as a custom plugin (either string or function)
             custom_plugins.push({
                 name: plugin_name,
                 enable,
@@ -124,16 +124,26 @@ function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): MdIt {
             return parser;
         }
 
+        let plugin: MarkdownItPlugin | { default: MarkdownItPlugin } | null = null;
+
         try {
-            let plugin: MarkdownItPlugin | { default: MarkdownItPlugin } = require(plugin_config.name);
+            if (typeof plugin_config.name === 'function') {
+                plugin = plugin_config.name;
+            } else if (typeof plugin_config.name === 'string') {
+                plugin = require(plugin_config.name);
+            } else {
+                console.warn(`Invalid plugin type for:`, plugin_config.name);
+                return parser;
+            }
 
             // Handle ES6 modules
-            if (typeof plugin !== 'function' && typeof (plugin as any).default === 'function') {
+            if (plugin && typeof plugin !== 'function' && typeof (plugin as any).default === 'function') {
                 plugin = (plugin as any).default;
             }
 
             if (typeof plugin !== 'function') {
-                console.warn(`Plugin ${plugin_config.name} is not a function`);
+                const name = typeof plugin_config.name === 'function' ? plugin_config.name.name || 'anonymous' : plugin_config.name;
+                console.warn(`Plugin ${name} is not a valid function`);
                 return parser;
             }
 
@@ -144,7 +154,8 @@ function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): MdIt {
                 return parser.use(plugin as MarkdownItPlugin);
             }
         } catch (error: any) {
-            console.warn(`Failed to load plugin ${plugin_config.name}:`, error.message);
+            const name = typeof plugin_config.name === 'function' ? plugin_config.name.name || 'anonymous' : plugin_config.name;
+            console.warn(`Failed to load or apply plugin ${name}:`, error.message);
             return parser;
         }
     }, parser);

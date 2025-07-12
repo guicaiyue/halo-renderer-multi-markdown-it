@@ -21,7 +21,8 @@
     "src/**/*",
     "lib/**/*",
     "index.ts",
-    "types/**/*"
+    "types/**/*",
+    "types/missing.d.ts"
   ],
   "exclude": [
     "node_modules",

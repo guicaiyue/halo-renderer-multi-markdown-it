@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Markdown Renderer Examples</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css">
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        .output-container { border: 1px solid #ddd; padding: 1em; margin-bottom: 1em; border-radius: 5px; }
+        h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        pre { background-color: #f4f4f4; padding: 1em; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; }
+        .rendered-html { border: 1px solid #eee; padding: 1em; margin-top: 1em; }
+    </style>
+</head>
+<body>
+    <h1>Markdown Renderer Examples</h1>
+    <div id="main-output"></div>
+
+ 1   <!-- Load the renderer library -->
+    <script src="../dist/bundle.js"></script>
+    <!-- Load Prism for syntax highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-javascript.min.js"></script>
+
+    <script>
+        const outputDiv = document.getElementById('main-output');
+
+        function display(title, ...content) {
+            const container = document.createElement('div');
+            container.className = 'output-container';
+
+            const h2 = document.createElement('h2');
+            h2.textContent = title;
+            container.appendChild(h2);
+
+            const contentStr = content.map(arg => {
+                if (typeof arg === 'object') {
+                    return JSON.stringify(arg, null, 2);
+                }
+                return String(arg);
+            }).join(' ');
+
+            const pre = document.createElement('pre');
+            if (contentStr) {
+                pre.textContent = contentStr;
+            }
+            container.appendChild(pre);
+
+            outputDiv.appendChild(container);
+        }
+        
+        function displayHtml(title, htmlContent) {
+            const container = document.createElement('div');
+            container.className = 'output-container';
+
+            const h2 = document.createElement('h2');
+            h2.textContent = title;
+            container.appendChild(h2);
+
+            const renderedDiv = document.createElement('div');
+            renderedDiv.className = 'rendered-html';
+            renderedDiv.innerHTML = htmlContent;
+            container.appendChild(renderedDiv);
+
+            outputDiv.appendChild(container);
+        }
+
+        // Example markdown content
+        const MarkdownRenderer = window.MarkdownRenderer;
+
+        // Example markdown content
+        const markdownText = `
+# Hello World
+
+This is a **bold** text and this is *italic*.
+
+## Features Demo
+
+### Subscript and Superscript
+- Water formula: H~2~O
+- Math: x^2^ + y^2^ = z^2^
+
+### Task Lists
+- [x] Completed task
+- [ ] Pending task
+
+### Emoji
+Hello :smile: World :heart:
+
+### Code with Syntax Highlighting
+\`\`\`javascript
+function hello() {
+    console.log('Hello World!');
+}
+\`\`\`
+
+### Math (KaTeX)
+$$E = mc^2$$
+
+### Furigana (Japanese)
+{可愛い犬^か+わい・い・いぬ}
+
+### Spoiler
+!!This is a spoiler!!
+
+### Tables
+| Name | Age | City |
+|------|-----|------|
+| John | 25  | NYC  |
+| Jane | 30  | LA   |
+
+### Footnotes
+This is a text with footnote[^1].
+
+[^1]: This is the footnote content.
+`;
+
+        // Basic usage
+        const basicHtml = MarkdownRenderer.render(markdownText);
+        displayHtml('Basic Usage', basicHtml);
+
+        // Usage with custom configuration
+        const customHtml = MarkdownRenderer.render(markdownText, {
+            render: {
+                html: true,
+                breaks: false,
+                linkify: false
+            },
+            plugins: [
+                {
+                    name: 'markdown-it-emoji',
+                    enable: true,
+                    options: {}
+                },
+                {
+                    name: './lib/renderer/markdown-it-furigana',
+                    enable: true,
+                    options: {
+                        fallbackParens: '()'
+                    }
+                },
+                {
+                    name: './lib/renderer/markdown-it-spoiler',
+                    enable: true,
+                    options: {
+                        title: 'You know too much'
+                    }
+                }
+            ]
+        });
+        displayHtml('Custom Configuration', customHtml);
+
+        // Create a configured renderer instance
+        const myRenderer = MarkdownRenderer.createRenderer({
+            render: {
+                breaks: true,
+                linkify: true
+            },
+            plugins: [
+                {
+                    name: 'markdown-it-emoji',
+                    enable: true
+                },
+                {
+                    name: 'markdown-it-task-checkbox',
+                    enable: true
+                }
+            ]
+        });
+        const instanceHtml = myRenderer(markdownText);
+        displayHtml('Configured Renderer Instance', instanceHtml);
+
+        // Disable specific plugins
+        const minimalHtml = MarkdownRenderer.render(markdownText, {
+            plugins: [
+                {
+                    name: 'markdown-it-emoji',
+                    enable: false
+                },
+                {
+                    name: './lib/renderer/markdown-it-furigana',
+                    enable: false
+                }
+            ]
+        });
+        displayHtml('Disabled Plugins', minimalHtml);
+
+        // Error handling example
+        display('Error Handling');
+        try {
+            MarkdownRenderer.render(null);
+        } catch (error) {
+            display('Caught error:', error.message);
+        }
+
+        try {
+            MarkdownRenderer.render(123);
+        } catch (error) {
+            display('Caught error:', error.message);
+        }
+
+        display('Available Default Plugins', MarkdownRenderer.default_plugins);
+        display('Default Configuration', MarkdownRenderer.default_config);
+
+    </script>
+</body>
+</html>

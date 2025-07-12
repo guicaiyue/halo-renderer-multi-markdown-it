@@ -11,12 +11,10 @@
   - 生成性能统计报告
   - 输出完整的HTML文件
 
-- **`test-simple.js`** - 简单功能测试脚本
-  - 测试基础 Markdown 功能
-  - 快速验证核心功能
 
-- **`examples.js`** - 使用示例演示脚本
-  - 展示各种使用方法和配置选项
+
+- **`examples.html`** - 使用示例演示页面
+  - 在浏览器中直观展示各种使用方法和配置选项的渲染效果
   - 包含错误处理示例
   - 适合学习和参考
 
@@ -36,22 +34,18 @@
 
 ## 使用方法
 
-### 运行完整功能测试
+### 运行测试
 ```bash
 # 从项目根目录运行
-node test/test-all-features.js
+npm test
 ```
 
-### 运行简单功能测试
+### 查看使用示例
 ```bash
-# 从项目根目录运行
-node test/test-simple.js
-```
-
-### 运行使用示例
-```bash
-# 从项目根目录运行
-node test/examples.js
+# 在浏览器中打开HTML文件
+open test/examples.html
+# 或者在Windows中
+start test/examples.html
 ```
 
 ### 查看渲染结果

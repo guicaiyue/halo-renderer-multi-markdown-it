@@ -3,7 +3,42 @@ import Token from 'markdown-it/lib/token.mjs';
 import Renderer from 'markdown-it/lib/renderer.mjs';
 
 import Prism from 'prismjs';
-import loadLanguages from 'prismjs/components/index.js';
+// import loadLanguages from 'prismjs/components/index.js';
+import 'prismjs/components/prism-bash.js';
+import 'prismjs/components/prism-c.js';
+import 'prismjs/components/prism-cpp.js';
+import 'prismjs/components/prism-csharp.js';
+import 'prismjs/components/prism-css.js';
+import 'prismjs/components/prism-docker.js';
+import 'prismjs/components/prism-git.js';
+import 'prismjs/components/prism-go.js';
+import 'prismjs/components/prism-graphql.js';
+import 'prismjs/components/prism-java.js';
+import 'prismjs/components/prism-javascript.js';
+import 'prismjs/components/prism-json.js';
+import 'prismjs/components/prism-jsx.js';
+import 'prismjs/components/prism-kotlin.js';
+import 'prismjs/components/prism-latex.js';
+import 'prismjs/components/prism-less.js';
+import 'prismjs/components/prism-makefile.js';
+import 'prismjs/components/prism-markdown.js';
+import 'prismjs/components/prism-nginx.js';
+import 'prismjs/components/prism-objectivec.js';
+import 'prismjs/components/prism-perl.js';
+import 'prismjs/components/prism-php.js';
+import 'prismjs/components/prism-powershell.js';
+import 'prismjs/components/prism-python.js';
+import 'prismjs/components/prism-ruby.js';
+import 'prismjs/components/prism-rust.js';
+import 'prismjs/components/prism-sass.js';
+import 'prismjs/components/prism-scala.js';
+import 'prismjs/components/prism-scss.js';
+import 'prismjs/components/prism-sql.js';
+import 'prismjs/components/prism-swift.js';
+import 'prismjs/components/prism-typescript.js';
+import 'prismjs/components/prism-tsx.js';
+import 'prismjs/components/prism-wasm.js';
+import 'prismjs/components/prism-yaml.js';
 import pangu from 'pangu';
 import LanguagesTip from './lang.js';
 
@@ -46,8 +81,6 @@ const unescapeHTML = (str: string): string => {
 
 const escapeSwigTag = (str: string): string => str.replace(/{/g, '&#123;').replace(/}/g, '&#125;');
 const unescapeSwigTag = (str: string): string => str.replace(/&#123;/g, '{').replace(/&#125;/g, '}');
-
-loadLanguages.silent = true;
 
 /**
  * Loads the provided Prism plugin.
@@ -124,11 +157,7 @@ function selectLanguage(options: PrismPluginOptions, lang: string): [string, str
  */
 function loadPrismLang(lang: string): any {
   if (!lang) return undefined;
-  let langObject = Prism.languages[lang];
-  if (langObject === undefined) {
-    loadLanguages([lang]);
-    langObject = Prism.languages[lang];
-  }
+  const langObject = Prism.languages[lang];
   return langObject;
 }
 
@@ -296,7 +325,12 @@ export default (md: MarkdownIt, options: PrismPluginOptions = {}): void => {
     } = getOptions(info.slice(lang.length));
 
     if (prismLang) {
-      code = Prism.highlight(unescapeSwigTag(text), prismLang, langToUse);
+      try {
+        code = Prism.highlight(unescapeSwigTag(text), prismLang, langToUse);
+      } catch (err: any) {
+        console.warn(`[markdown-it-prism] failed to highlight code block with lang "${lang}". Error: ${err.message}`);
+        code = escapeHTML(unescapeSwigTag(text));
+      }
     } else if (lang == 'raw') {
       code = escapeHTML(pangu.spacing(unescapeSwigTag(text)));
     }

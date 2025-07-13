@@ -54,12 +54,34 @@ loadLanguages.silent = true;
  * @param name Name of the plugin to load
  * @throws {Error} If there is no plugin with the provided name
  */
+// Statically import all required Prism plugins
+
+// Adds support for the `diff` language format, which is a prerequisite for the diff-highlight plugin.
+import 'prismjs/components/prism-diff.js';
+
+// Automatically turns URLs and email addresses into clickable links in code blocks.
+import 'prismjs/plugins/autolinker/prism-autolinker.js';
+
+// Shows invisible characters like tabs and newlines, which can be useful for debugging whitespace issues.
+import 'prismjs/plugins/show-invisibles/prism-show-invisibles.js';
+
+// Normalizes whitespace (e.g., converts tabs to spaces, trims leading/trailing whitespace) for consistent code formatting.
+import 'prismjs/plugins/normalize-whitespace/prism-normalize-whitespace.js';
+
+// Highlights added or removed lines in `diff` formatted code blocks.
+import 'prismjs/plugins/diff-highlight/prism-diff-highlight.js';
+
+// The loadPrismPlugin function is now effectively a no-op since plugins are imported statically.
+// We'll keep it for now to avoid breaking the call sites, but it doesn't need to do anything.
 async function loadPrismPlugin(name: string): Promise<void> {
-  try {
-    await import(`prismjs/plugins/${name}/prism-${name}`);
-  } catch (e) {
-    console.warn(`Failed to load Prism plugin "${name}".`);
+  // Static imports are handled above. This function can be left empty or
+  // could perform a check to see if the plugin was loaded if Prism exposes such a mechanism.
+  // For now, we'll just log a warning if a plugin that wasn't statically imported is requested.
+  const staticallyImported = ['autolinker', 'show-invisibles', 'normalize-whitespace', 'diff-highlight'];
+  if (!staticallyImported.includes(name)) {
+    console.warn(`Prism plugin "${name}" is not statically imported and may not be available.`);
   }
+  return Promise.resolve();
 }
 
 /**

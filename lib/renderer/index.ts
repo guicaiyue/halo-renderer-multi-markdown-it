@@ -1,4 +1,4 @@
-import MdIt = require('markdown-it');
+import MdIt from 'markdown-it';
 import { PluginConfig, MarkdownItPlugin } from '../../types';
 
 const default_plugins: string[] = [

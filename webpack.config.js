@@ -21,7 +21,10 @@ export default {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.mjs'],
-
+    extensionAlias: {
+      '.js': ['.ts', '.js'],
+      '.mjs': ['.mts', '.mjs']
+    },
     fallback: {
       'path': false,
       'fs': false,

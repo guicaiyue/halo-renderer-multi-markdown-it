@@ -13,3 +13,4 @@ declare module 'markdown-it-task-checkbox';
 declare module 'markdown-it-anchor';
 declare module 'markdown-it-toc-done-right';
 declare module 'markdown-it-pangu';
+declare module 'string';

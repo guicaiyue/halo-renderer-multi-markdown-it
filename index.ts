@@ -22,6 +22,7 @@ import markdownItTaskCheckbox from 'markdown-it-task-checkbox';
 import markdownItAnchor from 'markdown-it-anchor';
 import markdownItTocDoneRight from 'markdown-it-toc-done-right';
 import markdownItPangu from 'markdown-it-pangu';
+import S from 'string';
 import markdownItContainer from './lib/renderer/markdown-it-container/index.js';
 import markdownItFurigana from './lib/renderer/markdown-it-furigana/index.js';
 import markdownItKatex from './lib/renderer/markdown-it-katex/index.js';
@@ -157,12 +158,19 @@ async function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): Promise<M
             plugin = plugin.default;
         }
 
-        // Special handling for markdown-it-emoji
+                // Special handling for markdown-it-emoji
         if (plugin_config.name === 'markdown-it-emoji' && typeof plugin === 'object') {
             plugin = (plugin as any).full || (plugin as any).bare;
         }
 
-        if (typeof plugin === 'function') {
+        // Special handling for markdown-it-anchor
+        if (plugin_config.name === 'markdown-it-anchor') {
+            const options = {
+                ...plugin_config.options,
+                slugify: (s: string) => S(s).slugify().toString()
+            };
+            parser.use(plugin, options);
+        } else if (typeof plugin === 'function') {
             parser.use(plugin, plugin_config.options);
         } else {
             console.warn(`Plugin ${plugin_config.name} is not a valid markdown-it plugin.`);

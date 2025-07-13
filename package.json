@@ -1,6 +1,6 @@
 {
   "name": "markdown-renderer-xirizhi",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "A powerful independent Markdown renderer with 23+ plugins support, converted from hexo-renderer-multi-markdown-it.",
   "type": "module",
   "main": "dist/index.js",

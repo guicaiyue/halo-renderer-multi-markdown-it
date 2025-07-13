@@ -6,31 +6,56 @@
 import MdIt from 'markdown-it';
 import { RenderOptions, PluginConfig, RendererConfig, ProcessedPlugin, MarkdownItPlugin } from './types/index.js';
 
-// Default plugins list
-const default_plugins: string[] = [
-    'markdown-it-abbr',
-    'markdown-it-bracketed-spans',
-    'markdown-it-attrs',
-    'markdown-it-deflist',
-    'markdown-it-emoji',
-    'markdown-it-footnote',
-    'markdown-it-ins',
-    'markdown-it-mark',
-    'markdown-it-multimd-table',
-    'markdown-it-sub',
-    'markdown-it-sup',
-    'markdown-it-task-checkbox',
-    'markdown-it-anchor',
-    'markdown-it-toc-done-right',
-    'markdown-it-pangu',
-    './lib/renderer/markdown-it-container/index.js',
-    './lib/renderer/markdown-it-furigana/index.js',
-    './lib/renderer/markdown-it-katex/index.js',
-    './lib/renderer/markdown-it-prism/index.js',
-    './lib/renderer/markdown-it-chart/index.js',
-    './lib/renderer/markdown-it-spoiler/index.js',
-    './lib/renderer/markdown-it-excerpt/index.js'
-];
+// Statically import all plugins
+import markdownItAbbr from 'markdown-it-abbr';
+import markdownItBracketedSpans from 'markdown-it-bracketed-spans';
+import markdownItAttrs from 'markdown-it-attrs';
+import markdownItDeflist from 'markdown-it-deflist';
+import * as markdownItEmoji from 'markdown-it-emoji';
+import markdownItFootnote from 'markdown-it-footnote';
+import markdownItIns from 'markdown-it-ins';
+import markdownItMark from 'markdown-it-mark';
+import markdownItMultimdTable from 'markdown-it-multimd-table';
+import markdownItSub from 'markdown-it-sub';
+import markdownItSup from 'markdown-it-sup';
+import markdownItTaskCheckbox from 'markdown-it-task-checkbox';
+import markdownItAnchor from 'markdown-it-anchor';
+import markdownItTocDoneRight from 'markdown-it-toc-done-right';
+import markdownItPangu from 'markdown-it-pangu';
+import markdownItContainer from './lib/renderer/markdown-it-container/index.js';
+import markdownItFurigana from './lib/renderer/markdown-it-furigana/index.js';
+import markdownItKatex from './lib/renderer/markdown-it-katex/index.js';
+import markdownItPrism from './lib/renderer/markdown-it-prism/index.js';
+import markdownItChart from './lib/renderer/markdown-it-chart/index.js';
+import markdownItSpoiler from './lib/renderer/markdown-it-spoiler/index.js';
+import markdownItExcerpt from './lib/renderer/markdown-it-excerpt/index.js';
+
+const availablePlugins: Record<string, any> = {
+    'markdown-it-abbr': markdownItAbbr,
+    'markdown-it-bracketed-spans': markdownItBracketedSpans,
+    'markdown-it-attrs': markdownItAttrs,
+    'markdown-it-deflist': markdownItDeflist,
+    'markdown-it-emoji': (markdownItEmoji as any).full || markdownItEmoji,
+    'markdown-it-footnote': markdownItFootnote,
+    'markdown-it-ins': markdownItIns,
+    'markdown-it-mark': markdownItMark,
+    'markdown-it-multimd-table': markdownItMultimdTable,
+    'markdown-it-sub': markdownItSub,
+    'markdown-it-sup': markdownItSup,
+    'markdown-it-task-checkbox': markdownItTaskCheckbox,
+    'markdown-it-anchor': markdownItAnchor,
+    'markdown-it-toc-done-right': markdownItTocDoneRight,
+    'markdown-it-pangu': markdownItPangu,
+    './lib/renderer/markdown-it-container/index.js': markdownItContainer,
+    './lib/renderer/markdown-it-furigana/index.js': markdownItFurigana,
+    './lib/renderer/markdown-it-katex/index.js': markdownItKatex,
+    './lib/renderer/markdown-it-prism/index.js': markdownItPrism,
+    './lib/renderer/markdown-it-chart/index.js': markdownItChart,
+    './lib/renderer/markdown-it-spoiler/index.js': markdownItSpoiler,
+    './lib/renderer/markdown-it-excerpt/index.js': markdownItExcerpt
+};
+
+const default_plugins: string[] = Object.keys(availablePlugins);
 
 // Default configuration
 const default_config: {
@@ -121,43 +146,26 @@ async function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): Promise<M
             continue;
         }
 
-        let plugin: MarkdownItPlugin | { default: MarkdownItPlugin } | null = null;
+        let plugin = availablePlugins[plugin_config.name as string];
+        if (!plugin) {
+            console.warn(`Plugin ${plugin_config.name} not found.`);
+            continue;
+        }
 
-        try {
-            if (typeof plugin_config.name === 'function') {
-                plugin = plugin_config.name;
-            } else if (typeof plugin_config.name === 'string') {
-                plugin = await import(plugin_config.name);
-            } else {
-                console.warn(`Invalid plugin type for:`, plugin_config.name);
-                continue;
-            }
+        // Handle ES modules with default exports
+        if (typeof plugin !== 'function' && plugin.default) {
+            plugin = plugin.default;
+        }
 
-            // Handle ES6 modules
-            if (plugin && typeof plugin !== 'function' && plugin.default) {
-                plugin = plugin.default;
-            }
+        // Special handling for markdown-it-emoji
+        if (plugin_config.name === 'markdown-it-emoji' && typeof plugin === 'object') {
+            plugin = (plugin as any).full || (plugin as any).bare;
+        }
 
-            if (plugin_config.name === 'markdown-it-emoji') {
-                parser.use((plugin as any).full);
-                continue;
-            }
-
-            if (typeof plugin !== 'function') {
-                const name = typeof plugin_config.name === 'function' ? plugin_config.name.name || 'anonymous' : plugin_config.name;
-                console.warn(`Plugin ${name} is not a valid function`);
-                continue;
-            }
-
-            // Apply plugin with or without options
-            if (plugin_config.options && Object.keys(plugin_config.options).length > 0) {
-                parser.use(plugin as MarkdownItPlugin, plugin_config.options);
-            } else {
-                parser.use(plugin as MarkdownItPlugin);
-            }
-        } catch (error: any) {
-            const name = typeof plugin_config.name === 'function' ? plugin_config.name.name || 'anonymous' : plugin_config.name;
-            console.warn(`Failed to load or apply plugin ${name}:`, error.message);
+        if (typeof plugin === 'function') {
+            parser.use(plugin, plugin_config.options);
+        } else {
+            console.warn(`Plugin ${plugin_config.name} is not a valid markdown-it plugin.`);
         }
     }
     return parser;

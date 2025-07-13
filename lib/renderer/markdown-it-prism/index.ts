@@ -58,7 +58,7 @@ async function loadPrismPlugin(name: string): Promise<void> {
   try {
     await import(`prismjs/plugins/${name}/prism-${name}`);
   } catch (e) {
-    throw new Error(`Cannot load Prism plugin "${name}". Please check the spelling.`);
+    console.warn(`Failed to load Prism plugin "${name}".`);
   }
 }
 

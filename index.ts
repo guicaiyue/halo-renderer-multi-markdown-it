@@ -23,15 +23,13 @@ const default_plugins: string[] = [
     'markdown-it-anchor',
     'markdown-it-toc-done-right',
     'markdown-it-pangu',
-    './lib/renderer/markdown-it-container.js',
-    './lib/renderer/markdown-it-furigana.js',
-    './lib/renderer/markdown-it-katex.js',
-    './lib/renderer/markdown-it-mermaid.js',
-    './lib/renderer/markdown-it-graphviz.js',
-    './lib/renderer/markdown-it-prism.js',
-    './lib/renderer/markdown-it-chart.js',
-    './lib/renderer/markdown-it-spoiler.js',
-    './lib/renderer/markdown-it-excerpt.js'
+    './lib/renderer/markdown-it-container/index.js',
+    './lib/renderer/markdown-it-furigana/index.js',
+    './lib/renderer/markdown-it-katex/index.js',
+    './lib/renderer/markdown-it-prism/index.js',
+    './lib/renderer/markdown-it-chart/index.js',
+    './lib/renderer/markdown-it-spoiler/index.js',
+    './lib/renderer/markdown-it-excerpt/index.js'
 ];
 
 // Default configuration
@@ -136,8 +134,13 @@ async function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): Promise<M
             }
 
             // Handle ES6 modules
-            if (plugin && typeof plugin !== 'function' && typeof (plugin as any).default === 'function') {
-                plugin = (plugin as any).default;
+            if (plugin && typeof plugin !== 'function' && plugin.default) {
+                plugin = plugin.default;
+            }
+
+            if (plugin_config.name === 'markdown-it-emoji') {
+                parser.use((plugin as any).full);
+                continue;
             }
 
             if (typeof plugin !== 'function') {

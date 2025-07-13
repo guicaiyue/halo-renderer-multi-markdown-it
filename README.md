@@ -23,7 +23,7 @@ npm install markdown-renderer-xirizhi
 ## 快速开始
 
 ```javascript
-const MarkdownRenderer = require('markdown-renderer-xirizhi');
+import * as MarkdownRenderer from 'markdown-renderer-xirizhi';
 
 // 基本用法
 const html = MarkdownRenderer.render('# 你好世界\n\n这是 **粗体** 文本。');
@@ -151,8 +151,7 @@ const html = myRenderer('你好 :smile:');
   ```
 
 ### 图表和图形
-- **markdown-it-mermaid**：Mermaid 图表
-- **markdown-it-graphviz**：Graphviz 图形
+
 - **markdown-it-chart**：Frappe 图表
 
 ### 语言特定
@@ -190,7 +189,7 @@ const html = myRenderer('你好 :smile:');
 ### TypeScript 迁移
 本项目已从 JavaScript 迁移到 TypeScript，以提供更好的类型安全和开发体验。编译后的包对 JavaScript 项目完全兼容，无需额外配置。
 
-- **JS 项目使用**: `const { render } = require('markdown-renderer-xirizhi');`
+- **JS 项目使用**: `import { render } from 'markdown-renderer-xirizhi';`
 - **TS 项目使用**: `import { render } from 'markdown-renderer-xirizhi';` (自动获得类型支持)
 
 ### 开发流程

@@ -297,17 +297,7 @@ sequenceDiagram
     浏览器->>用户: 显示页面
 ```
 
-### Graphviz 图表
 
-```graphviz
-digraph G {
-    rankdir=LR;
-    A -> B;
-    B -> C;
-    C -> D;
-    D -> A;
-}
-```
 
 ### 目录 (TOC)
 

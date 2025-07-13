@@ -6,8 +6,9 @@ interface SpoilerPluginOptions {
   // 可以在这里定义剧透插件特定的选项
 }
 
-module.exports = function (md: MarkdownIt, options?: SpoilerPluginOptions): void {
-    const plugin = require('markdown-it-container');
+import plugin from 'markdown-it-container';
+
+export default function (md: MarkdownIt, options?: SpoilerPluginOptions): void {
     
     md.use(plugin, 'spoiler', {
         validate: function (params: string): RegExpMatchArray | null {

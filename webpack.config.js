@@ -1,6 +1,10 @@
-const path = require('path');
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   entry: './browser.ts',
   module: {
     rules: [
@@ -17,9 +21,11 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.mjs'],
-    alias: {
-      './lib/renderer/markdown-it-mermaid': path.resolve(__dirname, 'lib/renderer/markdown-it-mermaid/browser.ts'),
-      './lib/renderer/markdown-it-graphviz': path.resolve(__dirname, 'lib/renderer/markdown-it-graphviz/browser.ts')
+
+    fallback: {
+      'path': false,
+      'fs': false,
+      'url': false
     },
     fullySpecified: false
   },

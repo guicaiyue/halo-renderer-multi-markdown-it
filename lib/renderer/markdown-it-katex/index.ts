@@ -9,7 +9,7 @@ for rendering output.
 
 import MarkdownIt from 'markdown-it';
 import Token from 'markdown-it/lib/token.mjs';
-const katex = require('katex');
+import katex from 'katex';
 
 interface KatexOptions {
     displayMode?: boolean;
@@ -160,7 +160,7 @@ function math_block(state: any, start: number, end: number, silent: boolean): bo
     return true;
 }
 
-module.exports = function math_plugin(md: MarkdownIt, options?: KatexOptions): void {
+export default function math_plugin(md: MarkdownIt, options?: KatexOptions): void {
     // Default options
     const opts: KatexOptions = options || {};
 

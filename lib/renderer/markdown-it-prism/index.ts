@@ -2,10 +2,10 @@ import MarkdownIt from 'markdown-it';
 import Token from 'markdown-it/lib/token.mjs';
 import Renderer from 'markdown-it/lib/renderer.mjs';
 
-const Prism = require('prismjs');
-const loadLanguages = require('prismjs/components/');
-const pangu = require('pangu');
-import LanguagesTip from './lang';
+import Prism from 'prismjs';
+import loadLanguages from 'prismjs/components/index.js';
+import pangu from 'pangu';
+import LanguagesTip from './lang.js';
 
 interface PrismPluginOptions {
   plugins?: string[];
@@ -54,9 +54,9 @@ loadLanguages.silent = true;
  * @param name Name of the plugin to load
  * @throws {Error} If there is no plugin with the provided name
  */
-function loadPrismPlugin(name: string): void {
+async function loadPrismPlugin(name: string): Promise<void> {
   try {
-    require(`prismjs/plugins/${name}/prism-${name}`);
+    await import(`prismjs/plugins/${name}/prism-${name}`);
   } catch (e) {
     throw new Error(`Cannot load Prism plugin "${name}". Please check the spelling.`);
   }
@@ -228,7 +228,7 @@ function replaceTabs(str: string, tab: string): string {
  * @param md The markdown it instance the plugin is being registered to
  * @param options The options this plugin is being initialised with
  */
-module.exports = function (md: MarkdownIt, options: PrismPluginOptions = {}): void {
+export default (md: MarkdownIt, options: PrismPluginOptions = {}): void => {
   const config: PrismPluginOptions = {
     plugins: ['autolinker', 'show-invisibles', 'normalize-whitespace', 'diff-highlight'],
     init: () => {},

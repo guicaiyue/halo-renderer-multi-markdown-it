@@ -14,7 +14,7 @@ function guid(): string {
     });
 }
 
-module.exports = (md: MarkdownIt, options?: ChartPluginOptions): void => {
+export default (md: MarkdownIt, options?: ChartPluginOptions): void => {
     const defaultRenderer = md.renderer.rules.fence?.bind(md.renderer.rules);
 
     md.renderer.rules.fence = (tokens: Token[], idx: number, options: any, env: any, self: Renderer): string => {

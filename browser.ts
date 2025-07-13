@@ -25,8 +25,7 @@ import * as markdownItPangu from 'markdown-it-pangu';
 import * as markdownItContainer from './lib/renderer/markdown-it-container';
 import * as markdownItFurigana from './lib/renderer/markdown-it-furigana';
 import * as markdownItKatex from './lib/renderer/markdown-it-katex';
-import * as markdownItMermaid from './lib/renderer/markdown-it-mermaid';
-import * as markdownItGraphviz from './lib/renderer/markdown-it-graphviz';
+
 import * as markdownItPrism from './lib/renderer/markdown-it-prism';
 import * as markdownItChart from './lib/renderer/markdown-it-chart';
 import * as markdownItSpoiler from './lib/renderer/markdown-it-spoiler';
@@ -52,8 +51,7 @@ const browserPlugins: PluginConfig[] = [
     { name: markdownItContainer },
     { name: markdownItFurigana },
     { name: markdownItKatex },
-    { name: markdownItMermaid },
-    { name: markdownItGraphviz },
+
     { name: markdownItPrism },
     { name: markdownItChart },
     { name: markdownItSpoiler },

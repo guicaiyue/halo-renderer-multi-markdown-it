@@ -3,10 +3,8 @@
  * Converted from hexo-renderer-multi-markdown-it
  */
 
-'use strict';
-
-import MdIt = require('markdown-it');
-import { RenderOptions, PluginConfig, RendererConfig, ProcessedPlugin, MarkdownItPlugin } from './types';
+import MdIt from 'markdown-it';
+import { RenderOptions, PluginConfig, RendererConfig, ProcessedPlugin, MarkdownItPlugin } from './types/index.js';
 
 // Default plugins list
 const default_plugins: string[] = [
@@ -25,15 +23,15 @@ const default_plugins: string[] = [
     'markdown-it-anchor',
     'markdown-it-toc-done-right',
     'markdown-it-pangu',
-    require.resolve('./lib/renderer/markdown-it-container'),
-    require.resolve('./lib/renderer/markdown-it-furigana'),
-    require.resolve('./lib/renderer/markdown-it-katex'),
-    require.resolve('./lib/renderer/markdown-it-mermaid'),
-    require.resolve('./lib/renderer/markdown-it-graphviz'),
-    require.resolve('./lib/renderer/markdown-it-prism'),
-    require.resolve('./lib/renderer/markdown-it-chart'),
-    require.resolve('./lib/renderer/markdown-it-spoiler'),
-    require.resolve('./lib/renderer/markdown-it-excerpt')
+    './lib/renderer/markdown-it-container.js',
+    './lib/renderer/markdown-it-furigana.js',
+    './lib/renderer/markdown-it-katex.js',
+    './lib/renderer/markdown-it-mermaid.js',
+    './lib/renderer/markdown-it-graphviz.js',
+    './lib/renderer/markdown-it-prism.js',
+    './lib/renderer/markdown-it-chart.js',
+    './lib/renderer/markdown-it-spoiler.js',
+    './lib/renderer/markdown-it-excerpt.js'
 ];
 
 // Default configuration
@@ -119,10 +117,10 @@ function processPlugins(plugins: PluginConfig[] = []): ProcessedPlugin[] {
  * @param plugins - Plugins configuration
  * @returns Configured parser
  */
-function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): MdIt {
-    return plugins.reduce((parser: MdIt, plugin_config: ProcessedPlugin) => {
+async function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): Promise<MdIt> {
+    for (const plugin_config of plugins) {
         if (!plugin_config.enable) {
-            return parser;
+            continue;
         }
 
         let plugin: MarkdownItPlugin | { default: MarkdownItPlugin } | null = null;
@@ -131,10 +129,10 @@ function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): MdIt {
             if (typeof plugin_config.name === 'function') {
                 plugin = plugin_config.name;
             } else if (typeof plugin_config.name === 'string') {
-                plugin = require(plugin_config.name);
+                plugin = await import(plugin_config.name);
             } else {
                 console.warn(`Invalid plugin type for:`, plugin_config.name);
-                return parser;
+                continue;
             }
 
             // Handle ES6 modules
@@ -145,21 +143,21 @@ function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): MdIt {
             if (typeof plugin !== 'function') {
                 const name = typeof plugin_config.name === 'function' ? plugin_config.name.name || 'anonymous' : plugin_config.name;
                 console.warn(`Plugin ${name} is not a valid function`);
-                return parser;
+                continue;
             }
 
             // Apply plugin with or without options
             if (plugin_config.options && Object.keys(plugin_config.options).length > 0) {
-                return parser.use(plugin as MarkdownItPlugin, plugin_config.options);
+                parser.use(plugin as MarkdownItPlugin, plugin_config.options);
             } else {
-                return parser.use(plugin as MarkdownItPlugin);
+                parser.use(plugin as MarkdownItPlugin);
             }
         } catch (error: any) {
             const name = typeof plugin_config.name === 'function' ? plugin_config.name.name || 'anonymous' : plugin_config.name;
             console.warn(`Failed to load or apply plugin ${name}:`, error.message);
-            return parser;
         }
-    }, parser);
+    }
+    return parser;
 }
 
 /**
@@ -168,7 +166,7 @@ function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): MdIt {
  * @param options - Configuration options
  * @returns Rendered HTML
  */
-function render(markdown: string, options: RendererConfig = {}): string {
+async function render(markdown: string, options: RendererConfig = {}): Promise<string> {
     if (typeof markdown !== 'string') {
         throw new Error('Markdown input must be a string');
     }
@@ -185,7 +183,7 @@ function render(markdown: string, options: RendererConfig = {}): string {
 
     // Process and apply plugins
     const processed_plugins = processPlugins(config.plugins);
-    const configured_parser = applyPlugins(parser, processed_plugins);
+    const configured_parser = await applyPlugins(parser, processed_plugins);
 
     // Render markdown to HTML
     try {
@@ -200,8 +198,8 @@ function render(markdown: string, options: RendererConfig = {}): string {
  * @param options - Default configuration for this instance
  * @returns Render function with preset configuration
  */
-function createRenderer(options: RendererConfig = {}): (markdown: string, instanceOptions?: RendererConfig) => string {
-    return function(markdown: string, instanceOptions: RendererConfig = {}): string {
+function createRenderer(options: RendererConfig = {}): (markdown: string, instanceOptions?: RendererConfig) => Promise<string> {
+    return async function(markdown: string, instanceOptions: RendererConfig = {}): Promise<string> {
         const merged_options: RendererConfig = {
             render: { ...options.render, ...instanceOptions.render },
             plugins: instanceOptions.plugins || options.plugins || []
@@ -227,7 +225,3 @@ const markdownRenderer = {
 };
 
 export default markdownRenderer;
-
-// For CommonJS compatibility
-module.exports = markdownRenderer;
-module.exports.default = markdownRenderer;

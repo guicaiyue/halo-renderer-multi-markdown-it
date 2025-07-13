@@ -166,4 +166,4 @@ const languageMap: LanguageMap = {
   "yml": "YAML"
 };
 
-export = languageMap;
+export default languageMap;

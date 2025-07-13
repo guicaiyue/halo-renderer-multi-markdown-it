@@ -1,5 +1,7 @@
 import MdIt from 'markdown-it';
-import { PluginConfig, MarkdownItPlugin } from '../../types';
+import Renderer from 'markdown-it/lib/renderer.mjs';
+import { PluginConfig, MarkdownItPlugin } from '../../types/index.js';
+import Token from 'markdown-it/lib/token.mjs';
 
 const default_plugins: string[] = [
     'markdown-it-abbr',
@@ -108,7 +110,7 @@ interface LegacyContext {
  * @param options - Legacy options (unused)
  * @returns Rendered HTML string
  */
-function legacyRenderer(this: LegacyContext, data: RenderData, options?: any): string {
+async function legacyRenderer(this: LegacyContext, data: RenderData, options?: any): Promise<string> {
     const cfg = this.config.markdown;
     const opt = cfg ? cfg : 'default';
     let parser: any;
@@ -121,10 +123,11 @@ function legacyRenderer(this: LegacyContext, data: RenderData, options?: any): s
 
     const plugins = checkPlugins(typeof opt === 'object' ? opt.plugins : undefined);
 
-    parser = plugins.reduce((parser: MdIt, pluginConfig: ProcessedLegacyPlugin) => {
+    parser = plugins.reduce(async (parserPromise: Promise<MdIt>, pluginConfig: ProcessedLegacyPlugin) => {
+        const parser = await parserPromise;
         if (pluginConfig.enable) {
             try {
-                let plugin: MarkdownItPlugin | { default: MarkdownItPlugin } = require(pluginConfig.name);
+                let plugin: MarkdownItPlugin | { default: MarkdownItPlugin } = await import(pluginConfig.name);
 
                 // 处理 ES6 模块导出
                 if (typeof plugin !== 'function' && typeof (plugin as any).default === 'function') {
@@ -154,9 +157,10 @@ function legacyRenderer(this: LegacyContext, data: RenderData, options?: any): s
         } else {
             return parser;
         }
-    }, parser);
+    }, Promise.resolve(parser));
 
-    return parser.render(data.text);
+    const configuredParser = await parser;
+    return configuredParser.render(data.text);
 }
 
-export = legacyRenderer;
+export default legacyRenderer;

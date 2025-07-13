@@ -12,11 +12,14 @@ interface PluginOptions {
   // 可以在这里定义插件特定的选项
 }
 
-module.exports = function (md: MarkdownIt, options?: PluginOptions): void {
-    const plugin = require('markdown-it-container');
+import container from 'markdown-it-container';
+
+const usePlugin: any = container;
+
+export default function (md: MarkdownIt, options?: PluginOptions): void {
     
     // Note container
-    md.use(plugin, 'note', {
+    md.use(usePlugin, 'note', {
         validate: function (params: string): RegExpMatchArray | null {
             return params.trim().match(/^(default|primary|success|info|warning|danger)(.*)$/);
         },
@@ -34,7 +37,7 @@ module.exports = function (md: MarkdownIt, options?: PluginOptions): void {
     } as ContainerOptions);
 
     // Tab container
-    md.use(plugin, 'tab', {
+    md.use(usePlugin, 'tab', {
         marker: ';',
         validate: function(params: string): RegExpMatchArray | null {
             return params.trim().match(/^(\w+)+(.*)$/);
@@ -53,7 +56,7 @@ module.exports = function (md: MarkdownIt, options?: PluginOptions): void {
     } as ContainerOptions);
 
     // Collapse container
-    md.use(plugin, 'collapse', {
+    md.use(usePlugin, 'collapse', {
         marker: '+',
         validate: function(params: string): RegExpMatchArray | null {
             return params.match(/^(primary|success|info|warning|danger|\s)(.*)$/);
@@ -71,4 +74,4 @@ module.exports = function (md: MarkdownIt, options?: PluginOptions): void {
             }
         }
     } as ContainerOptions);
-};
+}

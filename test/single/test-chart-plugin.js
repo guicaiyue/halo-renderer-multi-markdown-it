@@ -1,6 +1,6 @@
-const MarkdownIt = require('markdown-it');
-const chartPlugin = require('../../dist/lib/renderer/markdown-it-chart');
-const assert = require('assert');
+import MarkdownIt from 'markdown-it';
+import chartPlugin from '../../dist/lib/renderer/markdown-it-chart/index.js';
+import assert from 'assert';
 
 console.log('Running tests for markdown-it-chart...');
 

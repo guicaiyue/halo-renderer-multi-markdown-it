@@ -6,7 +6,7 @@ interface ExcerptPluginOptions {
   // 可以在这里定义插件特定的选项
 }
 
-module.exports = function (md: MarkdownIt, options?: ExcerptPluginOptions): void {
+export default function (md: MarkdownIt, options?: ExcerptPluginOptions): void {
     const defaultRenderer = md.renderer.rules.text?.bind(md.renderer.rules);
 
     const rExcerpt = /<!--+\s*more\s*--+>/i;

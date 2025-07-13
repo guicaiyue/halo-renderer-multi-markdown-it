@@ -2,18 +2,13 @@
   "name": "markdown-renderer-xirizhi",
   "version": "1.0.7",
   "description": "A powerful independent Markdown renderer with 23+ plugins support, converted from hexo-renderer-multi-markdown-it.",
+  "type": "module",
   "main": "dist/index.js",
   "browser": "dist/bundle.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
-    },
-    "./browser": {
-      "import": "./dist/bundle.js",
-      "require": "./dist/bundle.js"
-    }
+    ".": "./dist/index.js",
+    "./browser": "./dist/bundle.js"
   },
   "repository": "https://github.com/amehime/markdown-renderer-xirizhi.git",
   "keywords": [
@@ -72,7 +67,11 @@
   },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",
+    "@types/markdown-it-container": "^2.0.10",
     "@types/node": "^24.0.12",
+    "@types/pangu": "^4.0.2",
+    "@types/prismjs": "^1.26.5",
+    "@types/puppeteer": "^5.4.7",
     "cpx": "^1.5.0",
     "css-loader": "^7.1.2",
     "style-loader": "^4.0.0",

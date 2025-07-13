@@ -1,6 +1,6 @@
 "use strict";
 
-import { parse, addTag } from "./ruby";
+import { parse, addTag } from "./ruby.js";
 
 const kanaRegex = /[\u3040-\u3096\u30a1-\u30fa\uff66-\uff9f\u30fc]/;
 const kanjiRegex = /[\u3400-\u9faf]/;
@@ -245,4 +245,4 @@ function process(state: any, silent: boolean, options: FuriganaOptions): boolean
   return true;
 }
 
-export = furigana;
+export default furigana;

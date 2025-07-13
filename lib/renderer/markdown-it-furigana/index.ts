@@ -1,5 +1,5 @@
 import MarkdownIt from 'markdown-it';
-import furigana from './lib/furigana';
+import furigana from './lib/furigana.js';
 
 interface FuriganaPluginOptions {
   fallbackParens?: string;
@@ -8,6 +8,6 @@ interface FuriganaPluginOptions {
   [key: string]: any;
 }
 
-module.exports = function(md: MarkdownIt, options?: FuriganaPluginOptions): void {
+export default function(md: MarkdownIt, options?: FuriganaPluginOptions): void {
   md.inline.ruler.before('emphasis', 'furigana', furigana(options));
 };

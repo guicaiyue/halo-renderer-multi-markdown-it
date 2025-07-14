@@ -4,6 +4,8 @@ import Renderer from 'markdown-it/lib/renderer.mjs';
 
 import Prism from 'prismjs';
 // import loadLanguages from 'prismjs/components/index.js';
+// Import markup-templating first as it's required by PHP and other templating languages
+import 'prismjs/components/prism-markup-templating.js';
 import 'prismjs/components/prism-bash.js';
 import 'prismjs/components/prism-c.js';
 import 'prismjs/components/prism-cpp.js';

@@ -229,6 +229,28 @@ Orange
 
 ### 容器
 
+### 链接网格
+
+::: json
+blackType: links
+site: 哔哩哔哩
+owner: 哔哩哔哩
+url: `https://www.bilibili.com/`
+desc: 中国最大二次元网址
+image: `https://gcore.jsdelivr.net/gh/guicaiyue/FigureBed@master/MImg/20240101223710179.jpg`
+color: "#6AC1EC"
+blackType: links
+site: Earthworm
+owner: cuixueshe
+url: `https://earthworm.cuixueshe.com/`
+desc: PC端英语学习打字网站,适合英语基础较差的人学习
+image: `https://earthworm.cuixueshe.com/logo.png`
+color: "#e7693f"
+extinfo: 学习记录
+exturl: `https://xirizhi.cn/docs/learn-english/earthworm/study-record`
+:::
+
+
 ::: warning 警告
 这是一个警告容器的内容。
 :::

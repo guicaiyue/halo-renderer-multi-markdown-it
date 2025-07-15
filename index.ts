@@ -22,7 +22,6 @@ import markdownItTaskCheckbox from 'markdown-it-task-checkbox';
 import markdownItAnchor from 'markdown-it-anchor';
 import markdownItTocDoneRight from 'markdown-it-toc-done-right';
 import markdownItPangu from 'markdown-it-pangu';
-import S from 'string';
 import markdownItContainer from './lib/renderer/markdown-it-container/index.js';
 import markdownItFurigana from './lib/renderer/markdown-it-furigana/index.js';
 import markdownItKatex from './lib/renderer/markdown-it-katex/index.js';
@@ -164,13 +163,23 @@ async function applyPlugins(parser: MdIt, plugins: ProcessedPlugin[]): Promise<M
         }
 
         // Special handling for markdown-it-anchor
-        if (plugin_config.name === 'markdown-it-anchor') {
-            const options = {
-                ...plugin_config.options,
-                slugify: (s: string) => S(s).slugify().toString()
+        else if (plugin_config.name === 'markdown-it-anchor' && typeof plugin === 'function') {
+            // 为 markdown-it-anchor 设置自定义 slugify 函数，避免中文被 URL 编码
+            const anchorOptions = {
+                slugify: (s: string) => {
+                    // 移除特殊字符，保留中文、英文、数字和连字符
+                    return s.trim()
+                        .toLowerCase()
+                        .replace(/[^\u4e00-\u9fa5a-z0-9\s-]/g, '') // 保留中文、英文、数字、空格和连字符
+                        .replace(/\s+/g, '-') // 将空格替换为连字符
+                        .replace(/-+/g, '-') // 合并多个连字符
+                        .replace(/^-|-$/g, ''); // 移除开头和结尾的连字符
+                },
+                ...plugin_config.options
             };
-            parser.use(plugin, options);
-        } else if (typeof plugin === 'function') {
+            parser.use(plugin, anchorOptions);
+        }
+        else if (typeof plugin === 'function') {
             parser.use(plugin, plugin_config.options);
         } else {
             console.warn(`Plugin ${plugin_config.name} is not a valid markdown-it plugin.`);
